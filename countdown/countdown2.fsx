@@ -56,14 +56,13 @@ let comb1 ((e1:Expr), (v1:Value)) ((e2:Expr), (v2:Value)) : (Expr * Value) list 
     if 1 < v1 then
         let q, r = divMod v2 v1
         [(App(Mul, e1, e2), v1 * v2)] @ 
-            if r = 0 then  [(App(Div, e2, e1), q)] 
-            else []
+        if r = 0 then [(App(Div, e2, e1), q)] 
+        else []
     else []
 
 let comb2 ((e1:Expr), (v1:Value)) ((e2:Expr), (v2:Value)) : (Expr * Value) list =
     [(App(Add, e1, e2), v1 + v2)] @
-    if 1 < v1 then
-        [(App(Mul, e1, e2), v1 * v2); (App(Div, e1, e2), 1)] 
+    if 1 < v1 then [(App(Mul, e1, e2), v1 * v2); (App(Div, e1, e2), 1)] 
     else []
       
 let combine ((e1:Expr), (v1:Value)) ((e2:Expr), (v2:Value)) : (Expr * Value) list =
