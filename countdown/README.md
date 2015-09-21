@@ -8,7 +8,7 @@ From the French TV show *Des chiffres et des lettres* ([wiki](https://en.wikiped
     (7+((1+10)*(25+50))) = 832
     Real: 00:00:26.163, CPU: 00:00:28.788, GC gen0: 314, gen1: 3
 
-**Optimized solution: countdown2**
+**Optimization: countdown2**
 
 	> display(countdown2 831 [1;3;7;10;25;50]);;
 
