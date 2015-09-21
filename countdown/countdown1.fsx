@@ -1,5 +1,7 @@
 ﻿#time 
 
+// Pearl
+
 type Op =
     | Add
     | Sub
@@ -76,3 +78,22 @@ let nearest n evs : (Expr * Value) =
     else search n d (e, v) (List.tail evs)
 
 let countdown1 n ints = subseqs ints |> concatMap mkExprs |> nearest n
+
+// Printing Solution
+
+let convertOp (op: Op) = 
+    match op with 
+    | Add -> "+"
+    | Sub -> "="
+    | Mul -> "*"
+    | Div -> "/"
+
+let rec toString e = 
+    match e with 
+    | Num(x) -> string x
+    | App(op, e1, e2) -> "(" + toString e1 + (convertOp op) + toString e2 + ")"
+
+let display (e, v) = 
+    let equation = toString e
+    let result = string v 
+    printfn "%s" (equation + " = " + result)
