@@ -15,3 +15,11 @@ From the French TV show *Des chiffres et des lettres* ([wiki](https://en.wikiped
 	(7+((1+10)*(25+50))) = 832
 	Real: 00:00:00.445>, CPU: 00:00:00.448, GC gen0: 10, gen1: 0
 	val it : unit = ()
+
+**Optimization: countdown3**
+	> display(countdown3 831 [1;3;7;10;25;50]);;
+
+	(7+((1+10)*(25+50))) = 832
+	Real: 00:00:00.112, CPU: 00:00:00.116, GC gen0: 3, gen1: 0
+	val it : unit = ()
+
