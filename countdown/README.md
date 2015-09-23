@@ -17,6 +17,7 @@ From the French TV show *Des chiffres et des lettres* ([wiki](https://en.wikiped
 	val it : unit = ()
 
 **Optimization: countdown3**
+
 	> display(countdown3 831 [1;3;7;10;25;50]);;
 
 	(7+((1+10)*(25+50))) = 832
