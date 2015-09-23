@@ -32,12 +32,12 @@ let rec value (x:Expr) : Value =
     | Num(x) -> x
     | App(op, expr1, expr2) -> apply op (value expr1) (value expr2)
 
-let legal (action:Op) (v1:Value) (v2:Value) : bool = 
-    match action, v1, v2 with 
-    | Add, v1, v2 -> (v1 <= v2)
-    | Sub, v1, v2 -> (v2 < v1)
-    | Mul, v1, v2 -> (1 < v1) && (v1 <= v2)
-    | Div, v1, v2 -> (1 < v2) && (v1 % v2 = 0)
+//let legal (action:Op) (v1:Value) (v2:Value) : bool = 
+//    match action, v1, v2 with 
+//    | Add, v1, v2 -> (v1 <= v2)
+//    | Sub, v1, v2 -> (v2 < v1)
+//    | Mul, v1, v2 -> (1 < v1) && (v1 <= v2)
+//    | Div, v1, v2 -> (1 < v2) && (v1 % v2 = 0)
 
 let concatMap f m = List.map (fun x -> f x) m |> List.concat
 

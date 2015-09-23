@@ -37,16 +37,16 @@ let non op e : bool =
     | _, Num(x)            -> true
     | op, App(op2, e1, e2) -> op <> op2  
 
-let legal (op:Op) ((e1: Expr), (v1:Value)) ((e2: Expr), (v2:Value)) : bool = 
-    match op, (e1, v1), (e2, v2) with 
-    | Add, (e1, v1), (e2, v2) -> (v1 <= v2) && 
-                                 non Sub e1 && non Add e2 && non Sub e2
-    | Sub, (e1, v1), (e2, v2) -> (v2 < v1) && 
-                                 non Sub e1 && non Sub e2
-    | Mul, (e1, v1), (e2, v2) -> (1 < v1) && (v1 <= v2) && 
-                                 non Div e1 && non Mul e2 && non Div e2
-    | Div, (e1, v1), (e2, v2) -> (1 < v2) && (v1 % v2 = 0) && 
-                                 non Div e1 && non Div e2
+//let legal (op:Op) ((e1: Expr), (v1:Value)) ((e2: Expr), (v2:Value)) : bool = 
+//    match op, (e1, v1), (e2, v2) with 
+//    | Add, (e1, v1), (e2, v2) -> (v1 <= v2) && 
+//                                 non Sub e1 && non Add e2 && non Sub e2
+//    | Sub, (e1, v1), (e2, v2) -> (v2 < v1) && 
+//                                 non Sub e1 && non Sub e2
+//    | Mul, (e1, v1), (e2, v2) -> (1 < v1) && (v1 <= v2) && 
+//                                 non Div e1 && non Mul e2 && non Div e2
+//    | Div, (e1, v1), (e2, v2) -> (1 < v2) && (v1 % v2 = 0) && 
+//                                 non Div e1 && non Div e2
 
 let concatMap f m = List.map (fun x -> f x) m |> List.concat
 
