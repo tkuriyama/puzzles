@@ -66,7 +66,7 @@ let comb1 ((e1:Expr), (v1:Value)) ((e2:Expr), (v2:Value)) : (Expr * Value) list 
         @
         [(App(Sub, e2, e1), v2 - v1)]
      else []) 
-     @
+    @
     (if 1 < v1 && non Div e1 && non Div e2 then
         let q, r = divMod v2 v1
         if non Mul e2 then [(App(Mul, e1, e2), v1 * v2)] else [] 
