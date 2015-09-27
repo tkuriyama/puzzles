@@ -9,6 +9,7 @@ let good v =
 
 let product = List.fold (*) 1
 
+
 let fold1 f items =
     List.fold f (List.head items) (List.tail items)
 
