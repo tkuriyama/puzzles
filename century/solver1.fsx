@@ -4,10 +4,9 @@ type Factor = Digit list
 type Term = Factor list
 type Expression = Term list
 
-let good v = 
-    v = 100
+let good v = v = 100
 
-let product = List.fold (*) 1;
+let product = List.fold (*) 1
 
 let fold1 f items =
     List.fold f (List.head items) (List.tail items)
@@ -32,7 +31,7 @@ let extend (x: Digit) (es: Expression list) : Expression list =
     | x, [] -> [[[[x]]]]
     | x, es -> concatMap (glue x) es
 
-let expressions = List.foldBack extend []
+let expressions es = List.foldBack extend es []
 
 let solver1 = List.filter (good << valExpr) << expressions
 
