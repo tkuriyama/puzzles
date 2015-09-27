@@ -41,7 +41,7 @@ let fToString (f: Factor) : string =
     string (valFact f)
 
 let tToString (t: Term) : string = 
-    String.concat " * " (List.map fToString t)
+    String.concat " x " (List.map fToString t)
 
 let eToString (e: Expression) : string =
     "100 = " + String.concat " + " (List.map tToString e)
