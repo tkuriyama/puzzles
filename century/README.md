@@ -1,7 +1,7 @@
 
 Enumerate all ways of inserting + and x as operations into the list [1..9] so as to make 100.
 
-Initial solution: solver1
+**Initial solution: solver1**
 
 	> solver1 [1..9] |> display;;
 	100 = 1 x 2 x 3 + 4 + 5 + 6 + 7 + 8 x 9
