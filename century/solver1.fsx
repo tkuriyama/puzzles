@@ -1,10 +1,11 @@
-﻿
+﻿#time
+
 type Digit = int
 type Factor = Digit list
 type Term = Factor list
 type Expression = Term list
 
-let good v = v = 100
+let good c v = v = 100
 
 let product = List.fold (fun acc x -> acc * x) 1
 
@@ -33,7 +34,7 @@ let extend (x: Digit) (es: Expression list) : Expression list =
 
 let expressions es = List.foldBack extend es []
 
-let solver1 = List.filter (good << valExpr) << expressions
+let solver1 c = List.filter (good c << valExpr) << expressions
 
 // string display 
 
