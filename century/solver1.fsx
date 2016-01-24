@@ -5,7 +5,7 @@ type Factor = Digit list
 type Term = Factor list
 type Expression = Term list
 
-let good c v = v = 100
+let good c v = v = c
 
 let product = List.fold (fun acc x -> acc * x) 1
 
