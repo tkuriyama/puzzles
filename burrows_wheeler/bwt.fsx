@@ -33,11 +33,8 @@ let testTransform = transform input
 (* Untransform = Recreate *) 
 
 let takeCols (j: int) = List.map (List.take j)
-   
 let hdsort xss = List.sortBy List.head xss
-
 let consCol xs xss = List.map2 (fun x lst -> x::lst) xs xss
-
 let fork (f, g) x = (f x, g x)
 
 let rec recreate j xs =
@@ -51,4 +48,4 @@ let untransform transformed =
     let l = List.length xs
     List.nth (recreate l xs) pos
 
-let testUntransform= untransform testTransform
+let testUntransform= untransform testTransformgi
