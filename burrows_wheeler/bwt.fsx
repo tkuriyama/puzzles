@@ -17,7 +17,6 @@ let rightRotate xs = List.append [List.last xs] (init xs)
 
 let rotations (xs: 'a list) : 'a list list =
     let l = List.length xs
-    let leftRotate xs = List.append (List.tail xs) [List.head xs]
     Seq.take l (iterate leftRotate xs)
     |> Seq.toList
 
