@@ -10,11 +10,6 @@ let init xs =
 
 let constant a _ = a
 
-let rec tails xs =
-    match xs with
-    | [] -> [[]]
-    | _  -> xs :: tails (List.tail xs)
-
 (* Transform *)
 
 let leftRotate xs = List.append (List.tail xs) [List.head xs]
