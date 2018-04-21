@@ -42,15 +42,28 @@ let hdsort xss = List.sortBy List.head xss
 let consCol xs xss = List.map2 (fun x lst -> x::lst) xs xss
 let fork (f, g) x = (f x, g x)
 
-let rec recreate j xs =
-    match j with
-    | 0 -> List.map (constant []) xs
-    | _ -> let arr, arrs = fork (id, recreate (j-1)) xs
+let rec recreate k ys =
+    match k with
+    | 0 -> List.map (constant []) ys
+    | _ -> let arr, arrs = fork (id, recreate (k-1)) ys
            consCol arr arrs |> hdsort
 
 let untransform transformed =
-    let pos, xs = transformed
-    let l = List.length xs
-    List.nth (recreate l xs) pos
+    let k, ys = transformed
+    let n = List.length ys
+    List.nth (recreate n ys) k
+
+(* Untransform without recreate *)
+
+let untransform' transformed =
+    let k, ys = transformed
+    let n = List.length ys   
+    let ya = ys |> List.toArray
+    let pa = List.map snd (List.sort (List.zip ys [0..(n-1)])) |> List.toArray
+    Seq.map (Array.get ya) (iterate (Array.get pa) k)
+    |> Seq.tail
+    |> Seq.take n
+    |> Seq.toList
 
 let testUntransform = untransform testTransform
+let testUntransform' = untransform' testTransform
