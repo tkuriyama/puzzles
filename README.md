@@ -1,7 +1,19 @@
-### functional-pearls ###
+# Puzzles
 
-F# ports of some functional pearls from Richard Bird's book *Pearls of Functional Algorithm Design*.
+A collection of puzzles, exercises, and algorithms.
 
-The code segments are ported for academic / learning purposes only; for context and the original Haskell code, see the original text.
+## functional-pearls
 
-The title can be [found on Amazon](http://www.amazon.com/Pearls-Functional-Algorithm-Design-Richard/dp/0521513383/).
+Some F# ports from Richard Bird's [Pearls of Functional Algorithm Design](https://www.amazon.com/Pearls-Functional-Algorithm-Design-Richard/dp/0521513383).
+
+
+## h99
+
+[99 problems in Haskell](https://wiki.haskell.org/H-99:_Ninety-Nine_Haskell_Problems)
+
+
+## Lugano
+
+Systems programming exercises from https://www.inf.usi.ch/carzaniga/edu/sysprog17s/exercises.html
+
+

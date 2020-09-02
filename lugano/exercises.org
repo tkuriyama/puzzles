@@ -1,0 +1,120 @@
+*  Source 
+https://www.inf.usi.ch/carzaniga/edu/sysprog17s/exercises.html
+
+
+* WordCount 
+wordcount: Write a C program called wordcount that counts the words in the standard input. A word is a sequence of one or more characters delimited by white space. (Hint: there is a standard function to check whether a character is "white space".) The output should be the same as the command: % wc -w
+Solution: wordcount.c, wordcount2.c, wordcount3.c
+
+* twotimes: 
+Implement a function called twotimes that takes a string and returns true if the given string consists of the concatenation of two identical substrings.
+
+Test this function by writing a program that reads a string of up to 1000 characters from the standard input, and outputs YES or NO according to the result of the twotimes function applied to the input string.
+
+For example, the output of twotimes should be true when called with a parameter mammamiamammamia and false when called with a parameter abracadabra.
+
+Solution: twotimes.c, twotimes2.c, twotimes3.c
+
+* cfreq: 
+Write a C program called cfreq that prints the frequencies of the characters in its standard input sorted from the most frequent to the least frequent. The output must be a set of lines. The frequency of each character must be printed in a single line containing the character followed by one space and by the frequency in decimal. If the character is a printable character (including the space character) then the character must be printed enclosed in single quotes. Otherwise, the character must be printed as an octal numeric value of width three.
+For example, the output of cfreq when this file is passed as its input stream should be this.
+
+Solution: cfreq.c
+
+* pwords: Implement a function declared as follows: int pwords(const char * begin, const char * end); that takes an input text and returns the number of palindrome words in the input text. A word is a contiguous sequence of alphabetic characters as defined by the isalpha library function.
+Test the pword function by writing a program that reads the text from the standard input.
+
+* findstring: 
+
+Write a C program that takes a string as a command-line parameter, reads the standard input, and returns 0 if the given string is found in the input stream, or 1 otherwise.
+More interesting variant: Implement a program that takes one or more strings as a command-line parameters, reads the standard input, and returns 0 if all the given strings are found in the input stream.
+
+Solutions: findstring.c, findstrings.c, findstrings2.c, findstrings3.c
+
+* flipstream: 
+Implement a program that reads lines from the standard input and outputs the lines in reverse order. The program must use either a linked list or an array to store lines. You must implement both methods. The pre-processor variable WITH_ARRAY can be passed to the compiler to select the array version. Also, the numeric pre-processor variable MAX_LINE_SIZE defines the maximum accepted line size (size of a single line). In addition, the numeric pre-processor variable MAX_INPUT_SIZE defines the maximum number of lines accepted by the array implementation.
+More interesting variant: If you have not done so already, separate the previous implementation into three modules:
+
+The list module defines the list-based container.
+The array module defines the array-based container.
+The main module defines the main function, reads the input file, and uses one of the two container data structures to store and then print the lines.
+Solution: flipstream.c
+
+* findstring: 
+
+Write a C program that takes a string as a command-line parameter, reads the standard input, and returns 0 if the given string is found in the input stream, or 1 otherwise.
+More interesting variant: Implement a program that takes one or more strings as a command-line parameters, reads the standard input, and returns 0 if all the given strings are found in the input stream.
+
+Solutions: findstring.c, findstrings.c, findstrings2.c, findstrings3.c
+
+* genealogy: 
+Consider a database of people in which each record stores the name and birthdate of a person, plus the name of the mother and father of that person. Write a C program that reads the database from the standard input, and then for each name passed as command-line parameter, prints the genealogy of that person.
+The input database is a text file with one record per line, and each field in each line separated by commas. For example:
+
+16/12/1969,Mario Rossi,Alberto Rossi,Diana Bianchi
+For each selected person (specified on the command line) the program must print the name of all the person's ancestors, one for each line, indicating also their relation with the person. The relations are "mother", "father", "grandmother", "grandfather", "great-grandmother", "great-grandfather", "great-great-grandmother", and so on.
+Solution: genealogy.c
+
+* coursesdb: 
+
+Write a module that implements a database of courses and students. The database consists of three tables:
+a table of courses each identified by a unique integer course id. A course has a title, which is a string of up to 60 characters, a year, and a semester defined by one character, either 'F' for fall or 'S' for spring.
+a table of students, each identified by a unique integer id. A student has a name, which is a string of up to 30 characters, and an enrollment year.
+a table representing the enrollment relation between students and courses. That is, which students is or was enrolled in which course. Each row in this table has a student id and a course id.
+The module must implement the application programmer interface (API) defined and documented in the coursesdb.h header file.
+
+* debugging: 
+
+Consider the Exercise 1 of the Final Exam of Spring 2015 (variant 2), and consider this solution. Use this tests to test the solution and to debug it completely using a symbolic debugger (e.g., gdb).
+Material: strstack.h, strstack.c, test_strstack.c
+hashmap: Implement a hash map with the API defined in this header file.
+Material: hashmap.h
+
+* rec_io: 
+Write a module that implements a formatting filter for text records. In essence, an application uses a filter by first passing a string of characters representing a record, and then by producing an output of the that input record according to a format string. A text record consists of one or more textual fields separated by a separator string. The module must implement filter objects as specified by the attached rec_io.h header file. An application might create multiple filter objects, which may be used at the same time, and that must be independent of each other. Test your implementation using this test program.
+Material: rec_io.h, test_rec_io.c
+one-time pad: Write a program otp to encrypt files using a one-time pad. A one-time pad is an extremely simple and also very secure encryption scheme that works as follows: each byte xi of the cleartext file (input) produces a byte yi=xi⊕ ki in the ciphertext file (output) using one byte ki of the key, where ⊕ is the xor operator.
+A one-time pad is such that a key byte is used only once. This means that you need large keys, and that you need to remember which bytes you used of those keys. So, your encryption program must use a key file f, plus an auxiliary file named f.counter that stores the number of bytes already used in f.
+
+The otp program must accept the following optional command-line options:
+
+in=input-file defines the input cleartext file. By default, the program must read the cleartext file from standard input stdin.
+out=output-file defines the output ciphertext file. By default, the program must write the cleartext file from standard output stdout.
+key=key-file defines the output ciphertext file. By default, the program must use a key file called key. This also determines the name of the counter file to associate with a particular key file. The name of the counter file is then key-file.counter. If a counter file does not yet exist, the counter is assumed to be 0.
+For example, imagine that you and your friend share a large secret key (say 10MB) that you store in a file called secretkey. This is the first time you use this key file, and you start by encrypting a message with the following command:
+
+./otp in=private_message1.txt out=encrypted_message1 key=secretkey
+
+This creates a file called encrypted_message1 and also a file called secretkey.couter that contains the number n of characters used from the beginning of the key file, which is also exactly the number of characters in private_message1.txt and in encrypted_message1. The number n is stored in the counter file in decimal characters.
+
+Then you use again the same key file to encrypt another message:
+
+./otp in=message2.txt out=message2 key=secretkey
+
+This second command reads the number from the counter file, and then starts encrypting the second message with the (n+1)-th character in the key file, and then updates the counter file.
+
+Use this test script to test your implementation. Notice that this test uses two plaintext messages (message1.txt and message2.txt) and two corresponding ciphertext messages (message1.enc and message2.enc) encrypted with this secret key file.
+
+Hint: in your implementation, you might want to use the following functions from the standard library: fopen, fread, fwrite, fseek, and of course fprintf, etc. Notice that you can open the key counter file in read/write mode ("r+"), and after reading the current counter you can use rewind to go back to the beginning of that file to write the new value of the counter.
+
+Material: test_otp.sh, message1.txt, message2.txt, message1.enc, message2.enc, secretkey
+
+* particles: 
+Write a program called particles that produces an animation of a number of particles subjected to a constant force field. The animation is based on a simulation of n ball-shaped particles moving and bouncing around in a 2D space defined by the animation window. Particles bounce off walls, but do do not interact with each other.
+Examples:
+
+    
+
+Example video
+
+The particles program must accept the following optional command-line options:
+
+n=integer sets the number of particles in the simulation.
+fx=number horizontal component of the force field.
+fy=number vertical component of the force field.
+trace=number shading factor for the trace of a particle (see examples above). This is the factor by which a frame of the animation is dimmed at each successive frame. In other words, the trace factor determines the exponential decay of the brightness in tracing a particle, thus a value of 1.0 results in no traces at all, while a value of 0.0 results in infinite traces.
+radius=number radius of the particles in pixels.
+delta=time-in-seconds inter-frame interval.
+Implement the particle program using your GPU to aminate the particles, and also to render their traces on a 2D space (window).
+
+this page is maintained by Antonio Carzaniga and was updated on January 18, 2016
