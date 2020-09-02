@@ -12,8 +12,11 @@ Some F# ports from Richard Bird's [Pearls of Functional Algorithm Design](https:
 [99 problems in Haskell](https://wiki.haskell.org/H-99:_Ninety-Nine_Haskell_Problems)
 
 
-## Lugano
+## lugano
 
 Systems programming exercises from https://www.inf.usi.ch/carzaniga/edu/sysprog17s/exercises.html
 
+## palindrome
+
+Longest palindromic substring in linear time.
 
