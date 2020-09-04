@@ -7,6 +7,6 @@
 
 import Data.List (foldl')
 
-slice :: (Ord a) => [a] -> Int -> Int -> [a]
+slice :: [a] -> Int -> Int -> [a]
 slice xs a b = reverse . snd $ foldl' f (1, []) xs
   where f (i, acc) x = (i+1, if i >= a && i <= b then x:acc else acc)
