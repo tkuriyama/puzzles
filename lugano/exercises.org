@@ -16,7 +16,10 @@ For example, the output of twotimes should be true when called with a parameter 
 Solution: twotimes.c, twotimes2.c, twotimes3.c
 
 * cfreq: 
-Write a C program called cfreq that prints the frequencies of the characters in its standard input sorted from the most frequent to the least frequent. The output must be a set of lines. The frequency of each character must be printed in a single line containing the character followed by one space and by the frequency in decimal. If the character is a printable character (including the space character) then the character must be printed enclosed in single quotes. Otherwise, the character must be printed as an octal numeric value of width three.
+
+Write a C program called cfreq that prints the frequencies of the characters in its standard input sorted from the most frequent to the least frequent. The output must be a set of lines. The frequency of each character must be printed in a single line containing the character followed by one space and by the frequency in decimal. 
+
+If the character is a printable character (including the space character) then the character must be printed enclosed in single quotes. Otherwise, the character must be printed as an octal numeric value of width three.
 For example, the output of cfreq when this file is passed as its input stream should be this.
 
 Solution: cfreq.c
