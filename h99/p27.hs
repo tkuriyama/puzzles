@@ -29,9 +29,9 @@ genCombs n xs ys = concatMap f $ split ys
         f (y,ys') = genCombs (n-1) (y:xs) ys'
 
 
-type Pair a = ([a], [a])
+type Pair a = ([[a]], [a])
 
-subsets :: (Eq a) => [Int] -> [a] -> [[a]]
+subsets :: (Eq a) => [Int] -> [a] -> [[[a]]]
 subsets ns xs = map fst $ f ns [([], xs)]
   where
     f :: (Eq a) => [Int] -> [Pair a] -> [Pair a]
@@ -44,7 +44,7 @@ genSubsets n xs@(_, []) = [xs]
 genSubsets n xs@(_, rest) | n > length rest = [xs]
 genSubsets n xs@(prev, rest) =
   let combs = combinations n rest
-  in map (\ys -> (prev ++ ys, rest `minus` ys)) combs
+  in map (\ys -> (ys:prev, rest `minus` ys)) combs
   where minus as bs = [a | a <- as, a `notElem` bs]
 
 
