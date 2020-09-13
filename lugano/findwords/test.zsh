@@ -3,13 +3,13 @@
 function run_test {
     cat findwords.c | ./findwords_comp $2;
     if [ $? -eq 0 ] && [ $1 -eq 0 ]; then
-	echo "\nExpected pass, got pass: $2"
+	echo "\nOK: Expected pass, got pass: $2"
     elif [ $? -eq 0 ] && [ $1 -eq 1 ]; then
-	echo "\n>>> Expected pass, got fail: $2"
+	echo "\n>>> Expected fail, got pass: $2"
     elif [ $? -eq 1 ] && [ $1 -eq 1 ]; then
-	echo "\nExpected fail, got fail: $2"	
+	echo "\nOK: Expected fail, got fail: $2"	
     else
-	echo "\n>>> Expecteded fail, but got pass: $2" >&2
+	echo "\n>>> Expecteded pass, but got fail: $2" >&2
     fi
 }
 
