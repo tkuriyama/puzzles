@@ -17,6 +17,7 @@ setopt shwordsplit
 
 run_test 1 "whilst"
 run_test 0 "while"
+run_test 0 "while while while while while"
 run_test 0 "while if"
 run_test 1 "while if nope"
 
