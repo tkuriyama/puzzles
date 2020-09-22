@@ -12,7 +12,7 @@ struct record {
   struct record *mother;
 };
 
-/* safe malloc and realloc */
+/* safe malloc */
 
 void *emalloc(size_t sz) {
    void *p;
@@ -22,7 +22,7 @@ void *emalloc(size_t sz) {
 
 /* creating and destroying ancestry tree */
 
-// the results are copied into struct, so ok to overwrite each time
+// the results are copied into struct, so ok to overwrite startic array
 char **parse(char *line, char *delim) {
   // strip tailing newline
   int len = strlen(line);
@@ -60,7 +60,6 @@ void insert(char **fields, struct record *persons) {
     persons->father = father;
     persons->mother = mother;
   }
-  // 
   // Keep Looking
   else {
     if (persons->father != NULL) insert(fields, persons->father);
@@ -123,21 +122,17 @@ void showAncestry(struct record *persons, char *name, int level, int paternal) {
   return;
 }
 
-/* } */
 int main(int argc, char **argv) {
-
-  FILE * f;
-  char *line, **fields;
-  size_t linecap = 0;
-
   struct record *persons;
   persons = emalloc(sizeof(struct record));
   strcpy(persons->name, "");
-  
+
+  FILE * f;
+  char *line, **fields;
+  size_t linecap = 0;  
   f = fopen("ancestors.csv", "r");
   
-  while(1) {
-    if(getline(&line, &linecap, f) == -1) break;   
+  while(getline(&line, &linecap, f) != -1) {
     fields = parse(line, ",");
     insert(fields, persons);
   }
@@ -145,11 +140,10 @@ int main(int argc, char **argv) {
   free(line);
   fclose(f);
 
-  // find ancestor
+  // printTree(persons);
   if (argc > 1) 
     showAncestry(persons, argv[1], 0, 0);
 
   freeTree(persons);
   return 0;
-
-  }
+}
