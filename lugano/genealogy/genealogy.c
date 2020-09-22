@@ -99,7 +99,7 @@ void printAncestor(char *name, char *birthday, int level, int paternal) {
     if (level > 1) 
       printf("Grand ");
     
-    if (paternal == 1)
+    if (paternal)
       printf("Father: %s, %s\n", name, birthday);
     else
       printf("Mother: %s, %s\n", name, birthday);
