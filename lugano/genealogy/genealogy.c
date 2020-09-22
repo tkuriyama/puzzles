@@ -4,7 +4,6 @@
 
 const int BIRTHDAYSIZE = 12;
 const int NAMESIZE = 40;
-//const char * BIRTHDAYDEF;
   
 struct record {
   char birthday[BIRTHDAYSIZE];
@@ -23,7 +22,7 @@ void *emalloc(size_t sz) {
 
 /* creating and destroying ancestry tree */
 
-// the results are copied into struct, so ok to overwrite startic array
+// parse a csv string line into static array
 char **parse(char *line, char *delim) {
   // strip trailing newline
   int len = strlen(line);
@@ -40,22 +39,22 @@ char **parse(char *line, char *delim) {
 
 void populate(struct record *person, char *name) {
   strcpy(person->name, name);
+  //strcpy(person->birthday, "unknown");
   strcpy(person->birthday, "unknown");
   person->father = NULL;
   person->mother = NULL;
-  return;
 }
 
 void insert(char **fields, struct record *persons) {
-  struct record *father, *mother;
-  father = emalloc(sizeof(struct record));
-  mother = emalloc(sizeof(struct record));
-  populate(father, fields[2]);
-  populate(mother, fields[3]);
-  
   // Found tree root or correct record
   if ((strcmp(persons->name, "") == 0) ||
       (strcmp(persons->name, fields[1]) == 0)) {
+    struct record *father, *mother;
+    father = emalloc(sizeof(struct record));
+    mother = emalloc(sizeof(struct record));
+    populate(father, fields[2]);
+    populate(mother, fields[3]);
+      
     strcpy(persons->name, fields[1]);
     strcpy(persons->birthday, fields[0]);
     persons->father = father;
@@ -70,8 +69,8 @@ void insert(char **fields, struct record *persons) {
 }
 
 void freeTree(struct record *persons) {
-  (persons->father != NULL) ? freeTree(persons->father) : free(persons->father);
-  (persons->mother != NULL) ? freeTree(persons->mother) : free(persons->mother);
+  if (persons->father != NULL) freeTree(persons->father);
+  if (persons->mother != NULL) freeTree(persons->mother);
   free(persons);
   return;
 }
@@ -141,3 +140,5 @@ int main(int argc, char **argv) {
   freeTree(persons);
   return 0;
 }
+
+
