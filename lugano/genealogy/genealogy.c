@@ -78,23 +78,47 @@ void printTree(struct record *persons) {
 
 void freeTree(struct record *persons) {
   if (persons->father != NULL) freeTree(persons->father);
-  if (persons->father != NULL) freeTree(persons->mother);  
+  else free(persons->father);
+  
+  if (persons->father != NULL) freeTree(persons->mother);
+  else free(persons->mother);
+  
   free(persons);
   return;
 }
 
 /* Find Anceststry */
 
-void showAncestry(struct record *persons, char *name, int print) { 
-
-  if(strcmp(persons->name, name) == 0 || print > 0) {
-    printf("%s, %s\n", persons->name, persons->birthday);
-    if (persons->father != NULL) showAncestry(persons->father, persons->father->name, 1);
-    if (persons->mother != NULL) showAncestry(persons->mother, persons->mother->name, 1);    
+void printAncestor(char *name, char *birthday, int level, int paternal) {
+  if (level == 0) {
+    printf("Self: %s, %s\n", name, birthday);
   }
   else {
-    if (persons->father != NULL) showAncestry(persons->father, name, 0);
-    if (persons->mother != NULL) showAncestry(persons->mother, name, 0);    
+    if (level > 2)
+      for (int i = 2; i < level; ++i) printf("Great ");
+    if (level > 1) 
+      printf("Grand ");
+    
+    if (paternal == 1)
+      printf("Father: %s, %s\n", name, birthday);
+    else
+      printf("Mother: %s, %s\n", name, birthday);
+    return;
+  } 
+}
+
+void showAncestry(struct record *persons, char *name, int level, int paternal) { 
+
+  if(strcmp(persons->name, name) == 0 || level > 0) {
+    printAncestor(persons->name, persons->birthday, level, paternal);
+    if (persons->father != NULL)
+      showAncestry(persons->father, persons->father->name, level+1, 1);
+    if (persons->mother != NULL)
+      showAncestry(persons->mother, persons->mother->name, level+1, 0);    
+  }
+  else {
+    if (persons->father != NULL) showAncestry(persons->father, name, 0, 1);
+    if (persons->mother != NULL) showAncestry(persons->mother, name, 0, 0);    
   }
   return;
 }
@@ -123,7 +147,7 @@ int main(int argc, char **argv) {
 
   // find ancestor
   if (argc > 1) 
-    showAncestry(persons, argv[1], 0);
+    showAncestry(persons, argv[1], 0, 0);
 
   freeTree(persons);
   return 0;
