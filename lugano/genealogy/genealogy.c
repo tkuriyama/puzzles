@@ -4,7 +4,8 @@
 
 const int BIRTHDAYSIZE = 12;
 const int NAMESIZE = 40;
-
+//const char * BIRTHDAYDEF;
+  
 struct record {
   char birthday[BIRTHDAYSIZE];
   char name[NAMESIZE];
@@ -24,7 +25,7 @@ void *emalloc(size_t sz) {
 
 // the results are copied into struct, so ok to overwrite startic array
 char **parse(char *line, char *delim) {
-  // strip tailing newline
+  // strip trailing newline
   int len = strlen(line);
   if (line[len-1] == '\n')
     line[len-1] = '\0';
@@ -68,25 +69,21 @@ void insert(char **fields, struct record *persons) {
   return;
 }
 
+void freeTree(struct record *persons) {
+  (persons->father != NULL) ? freeTree(persons->father) : free(persons->father);
+  (persons->mother != NULL) ? freeTree(persons->mother) : free(persons->mother);
+  free(persons);
+  return;
+}
+
+/* Find Anceststry */
+
 void printTree(struct record *persons) {
   if (persons->father != NULL) printTree(persons->father);
   if (persons->father != NULL) printTree(persons->mother);  
   printf("Record: %s, %s\n", persons->name, persons->birthday);
   return;
 }
-
-void freeTree(struct record *persons) {
-  if (persons->father != NULL) freeTree(persons->father);
-  else free(persons->father);
-  
-  if (persons->father != NULL) freeTree(persons->mother);
-  else free(persons->mother);
-  
-  free(persons);
-  return;
-}
-
-/* Find Anceststry */
 
 void printAncestor(char *name, char *birthday, int level, int paternal) {
   if (level == 0) {
@@ -97,12 +94,9 @@ void printAncestor(char *name, char *birthday, int level, int paternal) {
       for (int i = 2; i < level; ++i) printf("Great ");
     if (level > 1) 
       printf("Grand ");
-    
-    if (paternal)
-      printf("Father: %s, %s\n", name, birthday);
-    else
-      printf("Mother: %s, %s\n", name, birthday);
-    return;
+
+    const char * parent = (paternal) ? "Father" : "Mother";
+    printf("%s: %s, %s\n", parent, name, birthday);
   } 
 }
 
