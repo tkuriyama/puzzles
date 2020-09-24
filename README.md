@@ -2,6 +2,10 @@
 
 A collection of puzzles, exercises, and algorithms.
 
+## fp-course
+
+Exercises from [fp-course](https://github.com/bitemyapp/fp-course).
+
 ## functional-pearls
 
 Some F# ports from Richard Bird's [Pearls of Functional Algorithm Design](https://www.amazon.com/Pearls-Functional-Algorithm-Design-Richard/dp/0521513383).
