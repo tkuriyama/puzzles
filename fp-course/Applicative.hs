@@ -364,11 +364,17 @@ filtering ::
   (a -> f Bool)
   -> List a
   -> f (List a)
-filtering p xs = undefined
+filtering p xs = truePair <$> boolPair p xs
 
--- filter = foldRight (\x acc -> if p x then (x :. acc) else acc) Nil
---  (<*>) :: ((->) t (a -> b)) -> ((->) t a) -> ((->) t b)
-                  
+boolPair :: Applicative f => (a -> f Bool) -> List a -> f ( List (a, Bool))
+boolPair p xs = lift2 zip fsts snds
+  where fsts = sequence $ map pure xs
+        snds = sequence $ map p xs
+
+truePair :: List (a, Bool) -> List a
+truePair Nil = Nil
+truePair xs = map fst . filter ((==) True . snd) $ xs
+
 -----------------------
 -- SUPPORT LIBRARIES --
 -----------------------
