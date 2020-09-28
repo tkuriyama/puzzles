@@ -12,4 +12,4 @@ The module must implement the application programmer interface (API) defined and
 
 * Leaks
 
-leaks -atExit -- ./leaker | grep LEAK:
+leaks -atExit -- ./coursesdb_comp | grep LEAK:
