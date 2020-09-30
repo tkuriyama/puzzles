@@ -42,19 +42,6 @@ typedef struct {
   int enrollment_ct, enrollment_max_ct;
 } Database;
 
-
-// DB Init and Destro
-
-/** Utility Functions 
- **/
-
-extern void *emalloc(size_t sz);
-
-extern void *erealloc(void *p, size_t sz);
-
-extern void ewrap(int status, char *name);
-
-
 /** Initializes the database.
  *
  *  Return a boolean values indicating whether the operation was

@@ -3,6 +3,21 @@
 #include <string.h>
 #include "coursedb.h"
 
+// Utils
+
+void *emalloc(size_t sz) {
+   void *p;
+   if((p = malloc(sz)) == NULL) exit(EXIT_FAILURE);
+   return p;
+}
+
+void *erealloc(void *p, size_t sz) {
+  if((p = realloc(p, sz)) == NULL) exit(EXIT_FAILURE);
+  return p;
+}
+
+// DB
+
 Database db = { .initialized = 0 };
 
 int init_database() {
@@ -12,14 +27,14 @@ int init_database() {
   db.course_ct = 0;
   db.course_max_ct = 10;
   db.students = (Student *)emalloc(sizeof(Student)*10);
-  db.students->pkey = 0;  
+  db.students->pkey = 0;
   db.student_ct = 0;
   db.student_max_ct = 10;
   db.enrollments = (Enrollment *)emalloc(sizeof(Enrollment)*40);
   db.enrollments->pkey = 0;
   db.enrollment_ct = 0;
   db.enrollment_max_ct = 40;
-  return 1; 
+  return 1;
 }
 
 int clear_database() {
@@ -36,7 +51,7 @@ int add_course(int id, const char * title, int year, char semester) {
     db.course_max_ct += db.course_max_ct / 2;
     db.courses = (Course *)erealloc(db.courses, db.course_max_ct);
   }
-  // current record 
+  // current record
   db.courses->id = id;
   strcpy(db.courses->title, title);
   db.courses->year = year;
