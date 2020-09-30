@@ -1,1 +1,1 @@
-rm -f main_comp
+rm -rf main_comp*
