@@ -1,6 +1,60 @@
 #ifndef COURSEDB_H_INCLUDED
 #define COURSEDB_H_INCLUDED
 
+#include <stdlib.h>
+
+/** Database Typedefs
+ **/
+// Database Definition
+
+typedef struct {
+  int pkey;
+  int id;
+  char title[60];
+  int year;
+  char semester;
+  int active;
+} Course;
+
+typedef struct {
+  int pkey;
+  int id;
+  char name[30];
+  int enroll_year[4];
+  int active;
+} Student;
+
+typedef struct {
+  int pkey;
+  int id;
+  Course *course;
+  Student *student;
+  int active;
+} Enrollment;
+
+typedef struct {
+  int initialized;
+  Course *courses;
+  int course_ct, course_max_ct;
+  Student *students;
+  int student_ct, student_max_ct;
+  Enrollment *enrollments;
+  int enrollment_ct, enrollment_max_ct;
+} Database;
+
+
+// DB Init and Destro
+
+/** Utility Functions 
+ **/
+
+extern void *emalloc(size_t sz);
+
+extern void *erealloc(void *p, size_t sz);
+
+extern void ewrap(int status, char *name);
+
+
 /** Initializes the database.
  *
  *  Return a boolean values indicating whether the operation was

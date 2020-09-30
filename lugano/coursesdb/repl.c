@@ -1,8 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include "coursedb.h"
-
-// REPL
 
 typedef struct {
   char *buffer;
@@ -37,7 +36,7 @@ void free_input(InputBuffer *ib) {
 
 void prompt() { printf("> "); }
 
-int main() {
+void repl(Database *db) {
   InputBuffer * ib = new_InputBuffer();
   printf("Welcome to Courses DB.\n \
           All commenads are prefixed with a colon (:) \n	\
@@ -47,13 +46,13 @@ int main() {
     prompt();
     read_input(ib);
     if(strcmp(ib->buffer, ":exit") == 0) {
-      if (db.initialized)
+      if (db->initialized)
 	ewrap(clear_database(), "clear_database");
       free_input(ib);
       exit(EXIT_SUCCESS);
     }
     else if(strcmp(ib->buffer, ":init") == 0) {
-      if (db.initialized)
+      if (db->initialized)
 	printf("Error: DB already initialized.\n");
       else 
 	ewrap(init_database(), "init_database");
@@ -63,5 +62,4 @@ int main() {
     }
   }
   
-  return 0;
 }

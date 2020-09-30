@@ -3,46 +3,7 @@
 #include <string.h>
 #include "coursedb.h"
 
-// Database Definition
-
-typedef struct {
-  int pkey;
-  int id;
-  char title[60];
-  int year;
-  char semester;
-  int active;
-} Course;
-
-typedef struct {
-  int pkey;
-  int id;
-  char name[30];
-  int enroll_year[4];
-  int active;
-} Student;
-
-typedef struct {
-  int pkey;
-  int id;
-  Course *course;
-  Student *student;
-  int active;
-} Enrollment;
-
-typedef struct {
-  int initialized;
-  Course *courses;
-  int course_ct, course_max_ct;
-  Student *students;
-  int student_ct, student_max_ct;
-  Enrollment *enrollments;
-  int enrollment_ct, enrollment_max_ct;
-} Database;
-
 Database db = { .initialized = 0 };
-
-// DB Init and Destroy
 
 int init_database() {
   db.initialized = 1;
@@ -73,7 +34,7 @@ int clear_database() {
 int add_course(int id, const char * title, int year, char semester) {
   if (db.course_ct + 1 == db.course_max_ct) {
     db.course_max_ct += db.course_max_ct / 2;
-    db.courses = erealloc(db.courses, db.course_max_ct);
+    db.courses = (Course *)erealloc(db.courses, db.course_max_ct);
   }
   // current record 
   db.courses->id = id;
