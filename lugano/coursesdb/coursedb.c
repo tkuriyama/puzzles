@@ -46,14 +46,21 @@ int clear_database() {
 
 // Print DB Stats
 
+int active_courses() {
+  int ct = 0;
+  for (int i=0; i<db.course_ct; i++)
+    if (db.courses[i].active) ct++;
+  return ct;
+}
+
 void print_stats() {
   printf("\n--- Database Stats\n");
-  printf("Course ct / max_ct:     %d / %d\n",
-	 db.course_ct, db.course_max_ct);
-  printf("Student ct / max_ct:    %d / %d\n",
-	 db.student_ct, db.student_max_ct);
-  printf("Enrollment ct / max_ct: %d / %d\n",
-	 db.enrollment_ct, db.enrollment_max_ct);
+  printf("Course ct / active / max:     %d / %d / %d\n",
+	 db.course_ct, active_courses(), db.course_max_ct);
+  printf("Student ct / active / max:    %d / %d / %d\n",
+	 db.student_ct, 0, db.student_max_ct);
+  printf("Enrollment ct / active / max: %d / %d / %d\n",
+	 db.enrollment_ct, 0, db.enrollment_max_ct);
   printf("-------------------\n\n");
 }
 
@@ -70,11 +77,11 @@ int add_course(int id, const char * title, int year, char semester) {
   db.courses->year = year;
   db.courses->semester = semester;
   db.courses->active = 1;
+  ++db.course_ct;
 
   // new record
-  ++db.courses;
-  ++db.course_ct;
-  db.courses->pkey = db.course_ct;
+  // ++db.courses;
+  // db.courses->pkey = db.course_ct;
   return 1;
 }
 

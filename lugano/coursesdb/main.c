@@ -17,6 +17,9 @@ int main() {
 
   ewrap(add_course(101, "Econ 101", 2020, 'F'), "Adding course");
   print_stats();
+
+  ewrap(delete_course(101), "Delete course");
+  print_stats();
   
   ewrap(clear_database(), "Clear Database");
   printf("All done!\n\n");
