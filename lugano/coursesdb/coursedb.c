@@ -16,7 +16,7 @@ void *erealloc(void *p, size_t sz) {
   return p;
 }
 
-// DB
+//Create and Destroy DB
 
 Database db = { .initialized = 0 };
 
@@ -42,6 +42,19 @@ int clear_database() {
   free(db.students);
   free(db.enrollments);
   return 1;
+}
+
+// Print DB Stats
+
+void print_stats() {
+  printf("\n--- Database Stats\n");
+  printf("Course ct / max_ct:     %d / %d\n",
+	 db.course_ct, db.course_max_ct);
+  printf("Student ct / max_ct:    %d / %d\n",
+	 db.student_ct, db.student_max_ct);
+  printf("Enrollment ct / max_ct: %d / %d\n",
+	 db.enrollment_ct, db.enrollment_max_ct);
+  printf("-------------------\n\n");
 }
 
 // DB Updates

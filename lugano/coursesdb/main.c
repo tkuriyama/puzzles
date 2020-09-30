@@ -13,7 +13,13 @@ void ewrap(int status, char * name) {
   return;
 }
 
+// Main
+
 int main() {
-  printf("Hello world!\n");
+  ewrap(init_database(), "Init Database");
+  //ewrap(add_course(101,"Econ 101", 2020, 'F'), "Adding courses");
+  print_stats();
+  ewrap(clear_database(), "Clear Database");
+  printf("All done!\n\n");
   return 0;
 }

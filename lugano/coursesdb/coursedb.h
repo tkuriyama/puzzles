@@ -207,3 +207,7 @@ extern struct student_iterator * students();
 extern struct student_iterator * course_students(int course_id);
 
 #endif
+
+/* DB States */ 
+
+extern void print_stats();
