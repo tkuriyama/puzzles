@@ -72,16 +72,16 @@ int add_course(int id, const char * title, int year, char semester) {
     db.courses = (Course *)erealloc(db.courses, db.course_max_ct);
   }
   // current record
-  db.courses->id = id;
-  strcpy(db.courses->title, title);
-  db.courses->year = year;
-  db.courses->semester = semester;
-  db.courses->active = 1;
+  db.courses[db.course_ct].id = id;
+  strcpy(db.courses[db.course_ct].title, title);
+  db.courses[db.course_ct].year = year;
+  db.courses[db.course_ct].semester = semester;
+  db.courses[db.course_ct].active = 1;
   ++db.course_ct;
 
   // new record
-  // ++db.courses;
-  // db.courses->pkey = db.course_ct;
+  db.courses[db.course_ct].pkey = db.course_ct;
+  
   return 1;
 }
 
