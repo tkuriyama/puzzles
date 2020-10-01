@@ -20,7 +20,7 @@ typedef struct {
   int pkey;
   int id;
   char name[30];
-  int enroll_year[4];
+  int enroll_year;
   int active;
 } Student;
 
@@ -42,14 +42,14 @@ typedef struct {
   int enrollment_ct, enrollment_max_ct;
 } Database;
 
-/** Initializes the database.
+/** Initializes the database. DONE
  *
  *  Return a boolean values indicating whether the operation was
  *  successful.
 */
 extern int init_database();
 
-/** Clear the database.
+/** Clear the database. DONE
  *
  *  Clear all tables, releases all resources allocated by the
  *  database.
@@ -59,7 +59,7 @@ extern int init_database();
 */
 extern int clear_database();
 
-/** Save the database tables into files.
+/** Save the database tables into files. TODO
  *
  *  Each table goes to a separate file.  The file names are defined by
  *  the given prefix, with each table having a different suffix.  The
@@ -69,7 +69,7 @@ extern int clear_database();
 */
 extern int save_tables(const char * prefix);
 
-/** Load the database tables from files.
+/** Load the database tables from files. TODO
  *
  *  Each table is read from a separate file as described above.  This
  *  function returns a non-zero value when the operation is
@@ -77,14 +77,14 @@ extern int save_tables(const char * prefix);
 */
 extern int load_tables(const char * prefix);
     
-/** Add a course to the database.
+/** Add a course to the database. DONE
  *
  *  Returns a boolean values indicating whether the operation was
- *  successful.
+ *  successful. 
 */
 extern int add_course(int id, const char * title, int year, char semester);
     
-/** Delete a course from the database
+/** Delete a course from the database DONE
  *
  *  Return a boolean values indicating whether the operation was
  *  successful.
@@ -160,26 +160,26 @@ struct course_iterator;
 */
 extern struct course_iterator * next_course(struct course_iterator *);
 
-/** Terminates iteration.
+/** Terminates iteration. DONE
  * 
  *  This operation may invalidate the object pointed by the given
  *  iterator. 
 */
 extern void abort_course_iteration(struct course_iterator *);
 
-/** Return the title of a course.
+/** Return the title of a course. DONE
 */
 extern const char * course_title(const struct course_iterator *);
 
-/** Return the year of a course.
+/** Return the year of a course. DONE
 */
 extern int course_year(const struct course_iterator *);
 
-/** Return the semester of a course.
+/** Return the semester of a course. DONE
 */
 extern char course_semester(const struct course_iterator *);
 
-/** Return an iterator over the courses.
+/** Return an iterator over the courses. DONE
  * 
  *  Returns the null pointer when there are no courses in the
  *  database.

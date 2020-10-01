@@ -3,7 +3,7 @@ redo-ifchange all
 
 # Ensure that the hello program, when run, says
 # hello like we expect.
-if ./main_comp | grep -i 'Error' >/dev/null; then
+if ./main_comp | grep 'Error' >/dev/null; then
     echo "Something Broke" >&2
     exit 1
 else
