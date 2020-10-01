@@ -28,6 +28,11 @@ void print_course(struct course_iterator *iter) {
 	 course_semester(iter));
 }
 
+void print_student(struct student_iterator *iter) {
+  printf("%s | %d\n",
+	 student_name(iter),
+	 student_enrollment_year(iter));
+}
 
 // Tests
 
@@ -38,8 +43,6 @@ void test_empty_roundtrip() {
   print_stats();
 
   ewrap(clear_database(), "Clear Database");
-
-  printf("\nAll done!\n\n");  
 }
 
 void test_add_delete_course() {
@@ -102,32 +105,53 @@ void test_iterators() {
   ewrap(add_course(101, "Econ 101", 2020, 'F'), "Adding course 101");
   ewrap(add_course(110, "Econ 110", 2020, 'F'), "Adding course 110");
   ewrap(add_course(111, "Econ 111", 2020, 'F'), "Adding course 111");
-  ewrap(delete_course(110), "Delete course 110");  
+  ewrap(delete_course(110), "Delete course 110");
+  ewrap(add_student(1, "John Doe", 2019), "Adding student 1");
+  ewrap(add_student(2, "Sam Smith", 2019), "Adding student 2");
+  ewrap(add_student(3, "Adele Jones", 2019), "Adding student 3");  
   print_stats();
   
   printf("Iterating through courses...\n");
-  struct course_iterator *iter = courses();
-  while (iter != NULL){
-    print_course(iter);
-    iter = next_course(iter);
+  struct course_iterator *iterC = courses();
+  while (iterC != NULL){
+    print_course(iterC);
+    iterC = next_course(iterC);
   }
 
+  printf("Iterating through students...\n");
+  struct student_iterator *iterS = students();
+  while (iterS != NULL){
+    print_student(iterS);
+    iterS = next_student(iterS);
+  }
+
+
   printf("\nIterating through courses, abort after 1 course...\n");
-  iter = courses();
-  print_course(iter);
-  abort_course_iteration(iter);
-  iter = next_course(iter);
-  if (iter != NULL) print_course(iter);
+  iterC = courses();
+  print_course(iterC);
+  abort_course_iteration(iterC);
+  iterC = next_course(iterC);
+  if (iterC != NULL) print_course(iterC);
+
+  printf("\nIterating through students, abort after 1 student...\n");
+  iterS = students();
+  print_student(iterS);
+  abort_student_iteration(iterS);
+  iterS = next_student(iterS);
+  if (iterS != NULL) print_student(iterS);
   
   ewrap(clear_database(), "Clear Database");
 }
 
 int main() {
   test_empty_roundtrip();
+
   test_add_delete_course();
   test_add_delete_student();
+  
   test_realloc();
   test_iterators();
+  
   printf("\nAll done!\n\n");
   return 0;
 }
