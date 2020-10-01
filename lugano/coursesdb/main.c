@@ -86,6 +86,10 @@ void test_realloc() {
   for (int i=0; i<20; ++i) {    
     add_course(i, "Econ Dummy", 2020, 'F');
   }
+  printf("Adding 30 students...\n");
+  for (int i=0; i<30; ++i) {    
+    add_student(i, "Student Dummy", 2020);
+  }  
   print_stats();
   ewrap(clear_database(), "Clear Database");
 }
