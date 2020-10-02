@@ -232,6 +232,11 @@ void test_IO() {
     for (int j=0; j<10; ++j) 
       enroll_student(i, j);
 
+  printf("Deactivating first record of each table...\n");
+  delete_student(0);
+  delete_course(0);
+  cancel_enrollment(0, 0);
+ 
   ewrap(save_tables("TestIO"), "Saving to file");
   ewrap(clear_database(), "Clear Database");
 

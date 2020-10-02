@@ -336,11 +336,11 @@ char *concat(const char *prefix, const char *suffix, char *fname, ssize_t sz) {
 int save_courses(const char *fname) {
   int status = 1;
   FILE *fptr = fopen(fname,"w");
+  fprintf(fptr, "PKey,ID,Active,Title,Year,Semester\n");
   for (int i=0; i<+db.course_ct; i++) {
     Course course = db.courses[i];
-    if (course.active) 
-      fprintf(fptr, "%d,%d,%s,%d,%c\n", course.pkey, course.id,
-	      course.title, course.year, course.semester); 
+    fprintf(fptr, "%d,%d,%d,%s,%d,%c\n", course.pkey, course.id,
+	    course.active, course.title, course.year, course.semester); 
   }
   
   fclose(fptr);
@@ -350,11 +350,11 @@ int save_courses(const char *fname) {
 int save_students(const char *fname) {
   int status = 1;
   FILE *fptr = fopen(fname,"w");
+  fprintf(fptr, "PKey,ID,Active,Name,EnrollYear\n");
   for (int i=0; i<+db.student_ct; i++) {
     Student student = db.students[i];
-    if (student.active) 
-      fprintf(fptr, "%d,%d,%s,%d\n", student.pkey, student.id,
-	      student.name, student.enroll_year);
+    fprintf(fptr, "%d,%d,%d,%s,%d\n", student.pkey, student.id,
+	    student.active, student.name, student.enroll_year);
   }
   
   fclose(fptr);
@@ -364,11 +364,11 @@ int save_students(const char *fname) {
 int save_enrollments(const char *fname) {
   int status = 1;
   FILE *fptr = fopen(fname,"w");
+  fprintf(fptr, "PKey,Active,StudentID,CourseID\n");
   for (int i=0; i<+db.enrollment_ct; i++) {
     Enrollment enrollment = db.enrollments[i];
-    if (enrollment.active) 
-      fprintf(fptr, "%d,%d,%d\n", enrollment.pkey,
-	      enrollment.student_id, enrollment.course_id);
+    fprintf(fptr, "%d,%d,%d,%d\n", enrollment.pkey, enrollment.active,
+	    enrollment.student_id, enrollment.course_id);
   }
   
   fclose(fptr);
