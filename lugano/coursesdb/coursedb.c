@@ -100,13 +100,21 @@ int add_course(int id, const char * title, int year, char semester) {
 }
 
 int delete_course(int id) {
-  int found = 0;
-  for (int i = 0; i < db.course_ct; ++i) {
+  int i, found = 0;
+  for (i = 0; i < db.course_ct; ++i) {
     if (db.courses[i].id == id) {
-      db.courses[i].active = 0;
       found = 1;
+      break;
     }
   }
+  // TODO delete enrollments
+  /* struct student_iterator *iterS = course_students(db.courses[i].id); */
+  /* while (iterS != NULL) { */
+  /*   cancel_enrollment(student_id(iterS), db.courses[i].id); */
+  /*   next_student(iterS); */
+  /* } */
+
+  db.courses[i].active = 0;
   return found;
 }
 
@@ -201,6 +209,9 @@ int delete_student(int id) {
       found = 1;
     }
   }
+  // TOOD update enrollments
+  
+  
   return found;
 }
 

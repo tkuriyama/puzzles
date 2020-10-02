@@ -232,11 +232,11 @@ void test_IO_save() {
     for (int j=0; j<10; ++j) 
       enroll_student(i, j);
 
-  printf("Deactivating first record of each table...\n");
+  printf("Deleting one student and one course...\n");
   delete_student(0);
   delete_course(0);
-  cancel_enrollment(0, 0);
-
+  expect(active_enrollments(), 81, "Enrollments incorrect after deletes");
+  
   print_stats();  
   ewrap(save_tables("TestIO"), "Saving to file");
   ewrap(clear_database(), "Clear Database");

@@ -58,7 +58,7 @@ extern int init_database();
 */
 extern int clear_database();
 
-/** Save the database tables into files. TODO
+/** Save the database tables into files. DONE
  *
  *  Each table goes to a separate file.  The file names are defined by
  *  the given prefix, with each table having a different suffix.  The
@@ -68,7 +68,7 @@ extern int clear_database();
 */
 extern int save_tables(const char * prefix);
 
-/** Load the database tables from files. TODO
+/** Load the database tables from files. DONE
  *
  *  Each table is read from a separate file as described above.  This
  *  function returns a non-zero value when the operation is
@@ -214,7 +214,9 @@ extern struct student_iterator * students();
 */
 extern struct student_iterator * course_students(int course_id);
 
-#endif
+/* Active Enrollments */
+
+extern int active_enrollments();
 
 /* DB Table Stats */ 
 
@@ -224,3 +226,4 @@ extern void print_stats();
 
 int find_enrollment(int student_id, int course_id);
 
+#endif
