@@ -324,7 +324,7 @@ int cancel_enrollment(int student_id, int course_id) {
   return (pkey >= 0);
 }
 
-// Load and Save Tables
+/*** Load and Save Tables ***/
 
 char *concat(const char *prefix, const char *suffix, char *fname, ssize_t sz) {
   strcpy(fname, "\0");
@@ -336,11 +336,12 @@ char *concat(const char *prefix, const char *suffix, char *fname, ssize_t sz) {
 int save_courses(const char *fname) {
   int status = 1;
   FILE *fptr = fopen(fname,"w");
-  fprintf(fptr, "PKey,ID,Active,Title,Year,Semester\n");
+  fprintf(fptr, "PKey,ID,Title,Year,Semester\n");
   for (int i=0; i<+db.course_ct; i++) {
     Course course = db.courses[i];
-    fprintf(fptr, "%d,%d,%d,%s,%d,%c\n", course.pkey, course.id,
-	    course.active, course.title, course.year, course.semester); 
+    if (course.active) 
+      fprintf(fptr, "%d,%d,%s,%d,%c\n", course.pkey, course.id,
+	      course.title, course.year, course.semester); 
   }
   
   fclose(fptr);
@@ -350,11 +351,12 @@ int save_courses(const char *fname) {
 int save_students(const char *fname) {
   int status = 1;
   FILE *fptr = fopen(fname,"w");
-  fprintf(fptr, "PKey,ID,Active,Name,EnrollYear\n");
+  fprintf(fptr, "PKey,ID,Name,EnrollYear\n");
   for (int i=0; i<+db.student_ct; i++) {
     Student student = db.students[i];
-    fprintf(fptr, "%d,%d,%d,%s,%d\n", student.pkey, student.id,
-	    student.active, student.name, student.enroll_year);
+    if (student.active) 
+      fprintf(fptr, "%d,%d,%s,%d\n", student.pkey, student.id,
+	      student.name, student.enroll_year);
   }
   
   fclose(fptr);
@@ -364,11 +366,12 @@ int save_students(const char *fname) {
 int save_enrollments(const char *fname) {
   int status = 1;
   FILE *fptr = fopen(fname,"w");
-  fprintf(fptr, "PKey,Active,StudentID,CourseID\n");
+  fprintf(fptr, "PKey,StudentID,CourseID\n");
   for (int i=0; i<+db.enrollment_ct; i++) {
     Enrollment enrollment = db.enrollments[i];
-    fprintf(fptr, "%d,%d,%d,%d\n", enrollment.pkey, enrollment.active,
-	    enrollment.student_id, enrollment.course_id);
+    if (enrollment.active) 
+      fprintf(fptr, "%d,%d,%d\n", enrollment.pkey, 
+	      enrollment.student_id, enrollment.course_id);
   }
   
   fclose(fptr);
@@ -383,4 +386,92 @@ int save_tables(const char * prefix) {
   status += save_students(concat(prefix, "-students.csv", fname, sz));
   status += save_enrollments(concat(prefix, "-enrollments.csv", fname, sz));
   return (status == 3);  
+}
+
+int load_courses(const char *fname) {
+  int status = 1;
+  FILE *f = fopen(fname, "r");
+  if (!f) return 0;
+  
+  char line[120];
+  char c;
+  
+  fgets(line, sizeof(line), f);
+  while (fgets(line, sizeof(line), f)) {
+    Course course;
+    if (sscanf(line, "%d,%d,%59[^,],%d,%c%c",
+	       &course.pkey, &course.id, course.title,
+	       &course.year, &course.semester, &c) != 6
+	||  c != '\n') {
+      fprintf(stderr, "Invalid format: %s\n", line);
+      status = 0;
+    }
+    else {
+      add_course(course.id, course.title, course.year, course.semester);
+    }
+  }
+  fclose(f);
+  return status;
+}
+  
+int load_students(const char *fname) {
+  int status = 1;
+  FILE *f = fopen(fname, "r");
+  if (!f) return 0;
+  
+  char line[100];
+  char c;
+  
+  fgets(line, sizeof(line), f);
+  while (fgets(line, sizeof(line), f)) {
+    Student student;
+    if (sscanf(line, "%d,%d,%29[^,],%d%c",
+	       &student.pkey, &student.id, student.name,
+	       &student.enroll_year, &c) != 5
+	||  c != '\n') {
+      fprintf(stderr, "Invalid format: %s\n", line);
+      status = 0;
+    }
+    else {
+      add_student(student.id, student.name, student.enroll_year);
+    }
+  }
+  fclose(f);
+  return status;
+} 
+int load_enrollments(const char *fname) {
+  int status = 1;
+  FILE *f = fopen(fname, "r");
+  if (!f) return 0;
+  
+  char line[100];
+  char c;
+  
+  fgets(line, sizeof(line), f);
+  while (fgets(line, sizeof(line), f)) {
+    Enrollment enrollment;
+    if (sscanf(line, "%d,%d,%d%c",
+	       &enrollment.pkey, &enrollment.student_id,
+	       &enrollment.course_id, &c) != 4
+	||  c != '\n') {
+      fprintf(stderr, "Invalid format: %s\n", line);
+      status = 0;
+    }
+    else {
+      enroll_student(enrollment.student_id, enrollment.course_id);
+    }
+  }
+  fclose(f);
+  return status;  
+}
+
+int load_tables(const char * prefix) {
+  int status = 0;
+  ssize_t sz = 30;
+  char fname[sz];
+  status += init_database();
+  status += load_courses(concat(prefix, "-courses.csv", fname, sz));
+  status += load_students(concat(prefix, "-students.csv", fname, sz));
+  status += load_enrollments(concat(prefix, "-enrollments.csv", fname, sz));
+  return (status == 4);
 }

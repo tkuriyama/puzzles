@@ -215,8 +215,8 @@ void test_enrollments() {
   ewrap(clear_database(), "Clear Database");
 }
 
-void test_IO() {
- printf("\n============== Test IO ==============\n\n");  
+void test_IO_save() {
+ printf("\n============== Test IO Save ==============\n\n");  
   ewrap(init_database(), "Init Database");
   
   printf("Adding 20 courses...\n");
@@ -236,12 +236,22 @@ void test_IO() {
   delete_student(0);
   delete_course(0);
   cancel_enrollment(0, 0);
- 
+
+  print_stats();  
   ewrap(save_tables("TestIO"), "Saving to file");
   ewrap(clear_database(), "Clear Database");
 
 }
 
+void test_IO_load() {
+  printf("\n============== Test IO Load ==============\n\n");  
+  
+  ewrap(load_tables("TestIO"), "Load tables");
+  print_stats();
+  
+ ewrap(clear_database(), "Clear Database");
+
+}
 
 int main() {
   test_empty_roundtrip();
@@ -253,7 +263,8 @@ int main() {
   test_iterators();
   test_enrollments();
 
-  test_IO();
+  test_IO_save();
+  test_IO_load();  
   
   printf("\nAll done!\n\n");
   return 0;
