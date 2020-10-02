@@ -190,7 +190,7 @@ void test_enrollments() {
   ewrap(enroll_student(2, 110), "Enroll 2 in 110");
   ewrap(enroll_student(3, 111), "Enroll 3 in 111");
   ewrap(cancel_enrollment(1, 110), "Unenroll 1 from 110");
-  ewrap(cancel_enrollment(1, 110), " Dup unenroll 1 from 110 -- OK");
+  ewrap_error(cancel_enrollment(1, 110), " Dup unenroll 1 from 110 -- should fail");
   ewrap_error(cancel_enrollment(999, 999), " Unenroll 999 from 999 -- should fail");
 
   print_stats();

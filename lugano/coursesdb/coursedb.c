@@ -82,7 +82,8 @@ void print_stats() {
 int add_course(int id, const char * title, int year, char semester) {
   if (db.course_ct + 1 == db.course_max_ct) {
     db.course_max_ct += db.course_max_ct / 2;
-    db.courses = (Course *)erealloc(db.courses, db.course_max_ct);
+    db.courses = (Course *)erealloc(db.courses,
+				    sizeof(Course) * db.course_max_ct);
   }
   // current record
   db.courses[db.course_ct].id = id;
@@ -176,7 +177,8 @@ char course_semester(const struct course_iterator *iter) {
 int add_student(int id, const char * name, int first_year) {
   if (db.student_ct + 1 == db.student_max_ct) {
     db.student_max_ct += db.student_max_ct / 2;
-    db.students = (Student *)erealloc(db.students, db.student_max_ct);
+    db.students = (Student *)erealloc(db.students,
+				      sizeof(Student) * db.student_max_ct);
   }
   // current record
   db.students[db.student_ct].id = id;
@@ -294,7 +296,8 @@ int find_enrollment(int student_id, int course_id) {
 int enroll_student(int student_id, int course_id) {
   if (db.enrollment_ct + 1 == db.enrollment_max_ct) {
     db.enrollment_max_ct += db.enrollment_max_ct / 2;
-    db.enrollments = (Enrollment *)erealloc(db.enrollments, db.enrollment_max_ct);  
+    db.enrollments = (Enrollment *)erealloc(db.enrollments,
+					    sizeof(Enrollment)*db.enrollment_max_ct);  
   }
 
   int status = 0;
@@ -331,7 +334,7 @@ char *concat(const char *prefix, const char *suffix, char *fname, ssize_t sz) {
 }
 
 int save_courses(const char *fname) {
-  int status = 0;
+  int status = 1;
   FILE *fptr = fopen(fname,"w");
   for (int i=0; i<+db.course_ct; i++) {
     Course course = db.courses[i];
@@ -344,12 +347,40 @@ int save_courses(const char *fname) {
   return status;
 }
 
+int save_students(const char *fname) {
+  int status = 1;
+  FILE *fptr = fopen(fname,"w");
+  for (int i=0; i<+db.student_ct; i++) {
+    Student student = db.students[i];
+    if (student.active) 
+      fprintf(fptr, "%d,%d,%s,%d\n", student.pkey, student.id,
+	      student.name, student.enroll_year);
+  }
+  
+  fclose(fptr);
+  return status;
+}
+
+int save_enrollments(const char *fname) {
+  int status = 1;
+  FILE *fptr = fopen(fname,"w");
+  for (int i=0; i<+db.enrollment_ct; i++) {
+    Enrollment enrollment = db.enrollments[i];
+    if (enrollment.active) 
+      fprintf(fptr, "%d,%d,%d\n", enrollment.pkey,
+	      enrollment.student_id, enrollment.course_id);
+  }
+  
+  fclose(fptr);
+  return status;
+}
+
 int save_tables(const char * prefix) {
   int status = 0;
   ssize_t sz = 30;
   char fname[sz];  
   status += save_courses(concat(prefix, "-courses.csv", fname, sz));
-  //status += save_students(prefix, "-students.csv");
-  //status += save_enrollments(prefix, "enrollment.csv");    
+  status += save_students(concat(prefix, "-students.csv", fname, sz));
+  status += save_enrollments(concat(prefix, "-enrollments.csv", fname, sz));
   return (status == 3);  
 }
