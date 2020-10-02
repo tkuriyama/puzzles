@@ -321,3 +321,35 @@ int cancel_enrollment(int student_id, int course_id) {
   return (pkey >= 0);
 }
 
+// Load and Save Tables
+
+char *concat(const char *prefix, const char *suffix, char *fname, ssize_t sz) {
+  strcpy(fname, "\0");
+  strlcat(fname, prefix, sz);
+  strlcat(fname, suffix, sz);
+  return fname;
+}
+
+int save_courses(const char *fname) {
+  int status = 0;
+  FILE *fptr = fopen(fname,"w");
+  for (int i=0; i<+db.course_ct; i++) {
+    Course course = db.courses[i];
+    if (course.active) 
+      fprintf(fptr, "%d,%d,%s,%d,%c\n", course.pkey, course.id,
+	      course.title, course.year, course.semester); 
+  }
+  
+  fclose(fptr);
+  return status;
+}
+
+int save_tables(const char * prefix) {
+  int status = 0;
+  ssize_t sz = 30;
+  char fname[sz];  
+  status += save_courses(concat(prefix, "-courses.csv", fname, sz));
+  //status += save_students(prefix, "-students.csv");
+  //status += save_enrollments(prefix, "enrollment.csv");    
+  return (status == 3);  
+}

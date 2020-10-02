@@ -92,23 +92,37 @@ void test_realloc() {
   
   ewrap(init_database(), "Init Database");
   
-  printf("Adding 20 courses...\n");
-  for (int i=0; i<20; ++i)
+  printf("Adding 15 courses...\n");
+  for (int i=0; i<15; ++i)
     add_course(i, "Econ Dummy", 2020, 'F');
-
-  printf("Adding 30 students...\n");
-  for (int i=0; i<30; ++i) 
+  
+  printf("Adding 20 students...\n");
+  for (int i=0; i<20; ++i) 
     add_student(i, "Student Dummy", 2020);
-
-  printf("Adding 100 enrollments...\n");
-  for (int i=0; i<10; ++i)
+  
+  printf("Adding 50 enrollments...\n");
+  for (int i=0; i<5; ++i)
     for (int j=0; j<10; ++j) 
       enroll_student(i, j);
 
+  printf("Iterating over courses...\n");
+  struct course_iterator *iterC = courses();
+  while (iterC != NULL){
+    print_course(iterC);
+    iterC = next_course(iterC);
+  }
+  
+  printf("\nIterate over students...\n");
+  struct student_iterator *iterS = students();
+  while (iterS != NULL){
+    print_student(iterS);
+    iterS = next_student(iterS);
+  }
+  
   print_stats();
-  expect(db.course_ct, 20, "Course count unexpected");
-  expect(db.student_ct, 30, "Student count unexpected");  
-  expect(db.enrollment_ct, 100, "Enrollment count unexpected");
+  expect(db.course_ct, 15, "Course count unexpected");
+  expect(db.student_ct, 20, "Student count unexpected");  
+  expect(db.enrollment_ct, 50, "Enrollment count unexpected");
   ewrap(clear_database(), "Clear Database");
 }
 
@@ -201,6 +215,29 @@ void test_enrollments() {
   ewrap(clear_database(), "Clear Database");
 }
 
+void test_IO() {
+ printf("\n============== Test IO ==============\n\n");  
+  ewrap(init_database(), "Init Database");
+  
+  printf("Adding 20 courses...\n");
+  for (int i=0; i<20; ++i)
+    add_course(i, "Econ Dummy", 2020, 'F');
+
+  printf("Adding 30 students...\n");
+  for (int i=0; i<30; ++i) 
+    add_student(i, "Student Dummy", 2020);
+
+  printf("Adding 100 enrollments...\n");
+  for (int i=0; i<10; ++i)
+    for (int j=0; j<10; ++j) 
+      enroll_student(i, j);
+
+  ewrap(save_tables("TestIO"), "Saving to file");
+  ewrap(clear_database(), "Clear Database");
+
+}
+
+
 int main() {
   test_empty_roundtrip();
 
@@ -210,6 +247,8 @@ int main() {
   test_realloc();
   test_iterators();
   test_enrollments();
+
+  test_IO();
   
   printf("\nAll done!\n\n");
   return 0;
