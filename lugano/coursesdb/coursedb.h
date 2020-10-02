@@ -26,9 +26,8 @@ typedef struct {
 
 typedef struct {
   int pkey;
-  int id;
-  Course *course;
-  Student *student;
+  int student_id;
+  int course_id;
   int active;
 } Enrollment;
 
@@ -91,39 +90,39 @@ extern int add_course(int id, const char * title, int year, char semester);
 */
 extern int delete_course(int id);
     
-/** Add a student to the database.
+/** Add a student to the database. DONE
  *
  *  Returns a boolean values indicating whether the operation was
  *  successful.
 */
 extern int add_student(int id, const char * name, int first_year);
     
-/** Delete a course from the database.
+/** Delete a course from the database. DONE
  * 
  *  Returns a boolean values indicating whether the operation was
  *  successful.
 */
 extern int delete_student(int id);
 
-/** Enroll a student into a course.
+/** Enroll a student into a course. DONE
  * 
  *  Returns a boolean values indicating whether the operation was
  *  successful.
 */
 extern int enroll_student(int student_id, int course_id);
 
-/** Cancels the enrollment of a student into a course.
+/** Cancels the enrollment of a student into a course. DONE
  * 
  *  Returns a boolean values indicating whether the operation was
  *  successful.
 */
 extern int cancel_enrollment(int student_id, int course_id);
 
-/** Opaque structures defining an iterator over sets of students.
+/** Opaque structures defining an iterator over sets of students. DONE
 */
-struct student_iterator;
+struct student_iterator; 
 
-/** Next student.
+/** Next student. DONE
  * 
  *  This operation may invalidate the object pointed by the given
  *  iterator. 
@@ -132,22 +131,27 @@ struct student_iterator;
 */
 extern struct student_iterator * next_student(struct student_iterator *);
 
-/** Terminates iteration.
+/** Terminates iteration. DONE
  * 
  *  This operation may invalidate the object pointed by the given
  *  iterator. 
 */
 extern void abort_student_iteration(struct student_iterator *);
 
-/** Return the name of a student.
+/* Student ID  DONE */
+
+
+extern int student_id(const struct student_iterator *);
+
+/** Return the name of a student. DONE
 */
 extern const char * student_name(const struct student_iterator *);
 
-/** Return the enrollment year for a student.
+/** Return the enrollment year for a student. DONE
 */
 extern int student_enrollment_year(const struct student_iterator *);
 
-/** Opaque structures defining an iterator over sets of courses.
+/** Opaque structures defining an iterator over sets of courses. DONE
 */
 struct course_iterator;
 
@@ -166,6 +170,10 @@ extern struct course_iterator * next_course(struct course_iterator *);
  *  iterator. 
 */
 extern void abort_course_iteration(struct course_iterator *);
+
+/* Course ID  DONE */
+
+extern int course_id(const struct course_iterator *);
 
 /** Return the title of a course. DONE
 */
@@ -187,7 +195,7 @@ extern char course_semester(const struct course_iterator *);
 extern struct course_iterator * courses();
 
 /** Return an iterator over the courses into which a given student is
- *  enrolled.
+ *  enrolled. DONE
  * 
  *  Returns the null pointer when there are no courses.
 */
@@ -200,7 +208,7 @@ extern struct course_iterator * student_courses(int student_id);
 */
 extern struct student_iterator * students();
 
-/** Return an iterator over the students enrolled into a given course.
+/** Return an iterator over the students enrolled into a given course. DONE
  * 
  *  Returns the null pointer when there are no students.
 */
@@ -208,6 +216,11 @@ extern struct student_iterator * course_students(int course_id);
 
 #endif
 
-/* DB States */ 
+/* DB Table Stats */ 
 
 extern void print_stats();
+
+/* Return -1 if not found, else the enrollment table pkey */
+
+int find_enrollment(int student_id, int course_id);
+

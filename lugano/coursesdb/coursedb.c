@@ -41,6 +41,7 @@ int clear_database() {
   free(db.courses);
   free(db.students);
   free(db.enrollments);
+  db.initialized = 0;  
   return 1;
 }
 
@@ -58,6 +59,13 @@ int active_students() {
   return ct;
 }
 
+int active_enrollments() {
+  int ct = 0;
+  for (int i=0; i<db.enrollment_ct; i++)
+    if (db.enrollments[i].active) ct++;
+  return ct;
+}
+
 void print_stats() {
   printf("\n--- Database Stats\n");
   printf("Course ct / active / max:     %d / %d / %d\n",
@@ -65,7 +73,7 @@ void print_stats() {
   printf("Student ct / active / max:    %d / %d / %d\n",
 	 db.student_ct, active_students(), db.student_max_ct);
   printf("Enrollment ct / active / max: %d / %d / %d\n",
-	 db.enrollment_ct, 0, db.enrollment_max_ct);
+	 db.enrollment_ct, active_enrollments(), db.enrollment_max_ct);
   printf("-------------------\n\n");
 }
 
@@ -103,28 +111,52 @@ int delete_course(int id) {
 
 struct course_iterator {
   int i;
+  int student_id;
   int active;
 };
 struct course_iterator course_iter = { .i = 0, .active = 0 };  
 
 struct course_iterator *courses() {
-  course_iter.i = 0;
   course_iter.active = 1;
-  return &course_iter;
+  course_iter.student_id = -1;  
+  course_iter.i = 0;
+  return next_course(&course_iter);
+}
+
+struct course_iterator *student_courses(int student_id) {
+  course_iter.active = 1;
+  course_iter.student_id = student_id;
+  
+  course_iter.i = -1;
+  return next_course(&course_iter);
 }
 
 struct course_iterator *next_course(struct course_iterator *iter) {
   if (!iter->active) return NULL;
   
-  while(++(iter->i) <= db.course_ct)
-    if (db.courses[iter->i].active == 1)
+  while(++(iter->i) <= db.course_ct){ 
+    Course course = db.courses[iter->i];
+    if (course.active  == 1 &&
+	(iter->student_id == -1 ||
+	 find_enrollment(iter->student_id, course.id) > -1))
       break;
+  }
+
+  struct course_iterator *p = iter;
+  if (iter->i >= db.course_ct) {
+    abort_course_iteration(iter);
+    p = NULL;
+  }
   
-  return (iter->i >= db.course_ct) ? NULL : iter;
+  return p;
 }
 
 void abort_course_iteration(struct course_iterator *iter) {
   iter->active = 0;
+}
+
+int course_id(const struct course_iterator *iter) {
+  return db.courses[iter->i].id;
 }
 
 const char *course_title(const struct course_iterator *iter) {
@@ -173,27 +205,51 @@ int delete_student(int id) {
 struct student_iterator {
   int i;
   int active;
+  int course_id;
 };
+
 struct student_iterator student_iter = { .i = 0, .active = 0 };  
 
 struct student_iterator *students() {
-  student_iter.i = 0;
   student_iter.active = 1;
-  return &student_iter;
+  student_iter.course_id = -1;
+  student_iter.i = -1;
+  return next_student(&student_iter);
+}
+
+struct student_iterator * course_students(int course_id) {
+  student_iter.active = 1;
+  student_iter.course_id = course_id;
+  student_iter.i = -1;
+  return next_student(&student_iter);
 }
 
 struct student_iterator *next_student(struct student_iterator *iter) {
   if (!iter->active) return NULL;
-  
-  while(++(iter->i) <= db.student_ct)
-    if (db.students[iter->i].active == 1)
+
+  // incremenet until we find a valid record 
+  while(++(iter->i) <= db.student_ct) { 
+    Student student = db.students[iter->i];
+    if (student.active && 
+        (iter->course_id == -1 ||
+	 find_enrollment(student.id, iter->course_id) > -1))
       break;
-  
-  return (iter->i >= db.student_ct) ? NULL : iter;
+  }
+    
+  struct student_iterator *p = iter;
+  if (iter->i >= db.student_ct) {
+    abort_student_iteration(iter);
+    p = NULL;
+  }     
+  return p;
 }
 
 void abort_student_iteration(struct student_iterator *iter) {
   iter->active = 0;
+}
+
+int student_id(const struct student_iterator *iter) {
+  return db.students[iter->i].id;
 }
 
 const char *student_name(const struct student_iterator *iter) {
@@ -204,5 +260,64 @@ int student_enrollment_year(const struct student_iterator *iter) {
   return db.students[iter->i].enroll_year;
 }
 
+/*** Enrollment ***/
 
->
+int valid_course(int course_id) {
+  int valid = 0;
+  for (int i=0; i<db.course_ct; ++i)
+    if (db.courses[i].active && db.courses[i].id == course_id)
+      valid = 1;
+  return valid;
+}
+
+int valid_student(int student_id) {
+  int valid = 0;
+  for (int i=0; i<db.student_ct; ++i)
+    if (db.students[i].active && db.students[i].id == student_id)
+      valid = 1;
+  return valid;
+}
+
+int find_enrollment(int student_id, int course_id) {
+  int pkey = -1;
+  Enrollment record;
+  for (int i=0; i<db.enrollment_ct; ++i) {
+    record = db.enrollments[i];
+    if (record.active &&
+	record.student_id == student_id &&
+	record.course_id == course_id)
+      pkey = record.pkey;
+  }
+  return pkey;
+}
+
+int enroll_student(int student_id, int course_id) {
+  if (db.enrollment_ct + 1 == db.enrollment_max_ct) {
+    db.enrollment_max_ct += db.enrollment_max_ct / 2;
+    db.enrollments = (Enrollment *)erealloc(db.enrollments, db.enrollment_max_ct);  
+  }
+
+  int status = 0;
+  if (valid_student(student_id) && valid_course(course_id) &&
+      find_enrollment(student_id, course_id) == -1) {
+    // current record
+    db.enrollments[db.enrollment_ct].student_id = student_id;
+    db.enrollments[db.enrollment_ct].course_id = course_id;
+    db.enrollments[db.enrollment_ct].active = 1;
+    ++db.enrollment_ct;
+    // new record
+    db.enrollments[db.enrollment_ct].pkey = db.enrollment_ct;
+    status = 1;
+  }
+  
+  return status;
+}
+
+int cancel_enrollment(int student_id, int course_id) {
+  int pkey = find_enrollment(student_id, course_id);
+  if (pkey >= 0)
+    db.enrollments[pkey].active = 0;
+  
+  return (pkey >= 0);
+}
+
