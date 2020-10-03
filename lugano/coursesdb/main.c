@@ -253,6 +253,20 @@ void test_IO_load() {
 
 }
 
+void test_IO_roundtrip() {
+  printf("\n============== Test IO Roundtrip ==============\n\n");
+
+  ewrap(load_tables("TestIO"), "Load tables");
+  print_stats();
+  ewrap(save_tables("TestIO-Diff1"), "Saving set Diff1...");
+  ewrap(clear_database(), "Clear Database");
+ 
+  ewrap(load_tables("TestIO-Diff1"), "Load tables");
+  print_stats();
+  ewrap(save_tables("TestIO-Diff2"), "Saving set Diff2...");  
+  ewrap(clear_database(), "Clear Database");
+}
+
 int main() {
   test_empty_roundtrip();
 
@@ -264,7 +278,8 @@ int main() {
   test_enrollments();
 
   test_IO_save();
-  test_IO_load();  
+  test_IO_load();
+  test_IO_roundtrip();
   
   printf("\nAll done!\n\n");
   return 0;
