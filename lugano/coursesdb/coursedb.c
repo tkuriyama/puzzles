@@ -107,12 +107,12 @@ int delete_course(int id) {
       break;
     }
   }
-  // TODO delete enrollments
-  /* struct student_iterator *iterS = course_students(db.courses[i].id); */
-  /* while (iterS != NULL) { */
-  /*   cancel_enrollment(student_id(iterS), db.courses[i].id); */
-  /*   next_student(iterS); */
-  /* } */
+  // delete enrollments
+  struct student_iterator *iterS = course_students(db.courses[i].id);
+  while (iterS != NULL) {
+    cancel_enrollment(student_id(iterS), db.courses[i].id);
+    iterS = next_student(iterS);
+  }
 
   db.courses[i].active = 0;
   return found;
@@ -202,16 +202,21 @@ int add_student(int id, const char * name, int first_year) {
 }
 
 int delete_student(int id) {
-  int found = 0;
-  for (int i = 0; i < db.student_ct; ++i) {
+  int i, found = 0;
+  for (i = 0; i < db.student_ct; ++i) {
     if (db.students[i].id == id) {
-      db.students[i].active = 0;
       found = 1;
+      break;
     }
   }
-  // TOOD update enrollments
+  // update enrollments
+  struct course_iterator *iterC = student_courses(db.students[i].id);
+  while (iterC != NULL) {
+    cancel_enrollment(db.students[i].id, course_id(iterC));
+    iterC = next_course(iterC);
+  }
   
-  
+  db.students[i].active = 0;
   return found;
 }
 
@@ -248,7 +253,7 @@ struct student_iterator *next_student(struct student_iterator *iter) {
 	 find_enrollment(student.id, iter->course_id) > -1))
       break;
   }
-    
+
   struct student_iterator *p = iter;
   if (iter->i >= db.student_ct) {
     abort_student_iteration(iter);

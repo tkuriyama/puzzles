@@ -109,7 +109,7 @@ void test_realloc() {
   struct course_iterator *iterC = courses();
   while (iterC != NULL){
     print_course(iterC);
-    iterC = next_course(iterC);
+    iterC = next_course(iterC);    
   }
   
   printf("\nIterate over students...\n");
@@ -232,9 +232,9 @@ void test_IO_save() {
     for (int j=0; j<10; ++j) 
       enroll_student(i, j);
 
-  printf("Deleting one student and one course...\n");
-  delete_student(0);
-  delete_course(0);
+  printf("\nCheck if enrollemnts are auto-updated...\n");
+  ewrap(delete_course(0), "Delte course 0");
+  ewrap(delete_student(0), "Delete student 0");
   expect(active_enrollments(), 81, "Enrollments incorrect after deletes");
   
   print_stats();  
