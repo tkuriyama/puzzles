@@ -361,5 +361,6 @@ satisfyAny ps = satisfy (or . sequence ps)
 --
 -- >>> isErrorResult (parse (betweenSepbyComma '[' ']' lower) "a]")
 -- True
+
 betweenSepbyComma :: Char -> Char -> Parser a -> Parser (List a)
 betweenSepbyComma l r p = betweenCharTok l r $ sepby p (charTok ',')
