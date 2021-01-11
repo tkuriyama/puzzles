@@ -36,7 +36,7 @@ main = do
   args <- getArgs
   case parseArgs args of
     Just (fp, runParse) -> runParse fp >>= printQuoteMsgs
-    Nothing -> putStrLn "Args expected: filename and optional reoder flag -r"
+    Nothing -> putStrLn "Args expected: filename and optional reorder flag -r"
 
 parseArgs :: [String] -> Maybe (FilePath, FilePath -> IO [QuoteMsg])
 parseArgs  args = case args of
@@ -48,9 +48,7 @@ parseArgs  args = case args of
 --------------------------------------------------------------------------------
 
 parseQuoteMsgs :: FilePath -> IO [QuoteMsg]
-parseQuoteMsgs fp = do
-  input <- BL.readFile fp
-  pure $ runGet getPcap input
+parseQuoteMsgs fp = runGet getPcap <$> BL.readFile fp
 
 getPcap :: Get [QuoteMsg]
 getPcap = skip 24 *> getQuoteMsgs
@@ -82,18 +80,13 @@ getQuoteMsg = do
 
 getPacketHeader :: Get (UTCTime, Int)
 getPacketHeader = do
-  pktTime <- getPktTime
+  s <- getInt32le
+  us <- getInt32le
   _ <- skip 4
   len <- getInt32le
-  pure (pktTime, fromIntegral len)
-
-getPktTime :: Get UTCTime
-getPktTime = do
-  secs <- getInt32le
-  usecs <- getInt32le
   let pktTime = posixSecondsToUTCTime $
-                fromIntegral secs + (fromIntegral usecs / 1000000)
-  pure pktTime
+                fromIntegral s + (fromIntegral us / 1000000)
+  pure (pktTime, fromIntegral len)
 
 getPacketData :: Get (TimeOfDay, B.ByteString, [Quote], [Quote])
 getPacketData = do
@@ -109,17 +102,14 @@ getPacketData = do
 
 getAccTime :: Get TimeOfDay
 getAccTime = do
-  [h, m, s] <- sequence [getInt 2, getInt 2, getInt 4]
+  [h, m, s] <- sequence [getIntBytes 2, getIntBytes 2, getIntBytes 4]
   pure $ TimeOfDay h m (fromIntegral s / 100)
 
 getQuote :: Get Quote
-getQuote = Quote <$> getInt 5 <*> getInt 7
+getQuote = Quote <$> getIntBytes 5 <*> getIntBytes 7
 
-
-getInt :: Int -> Get Int
-getInt n = do
-  i <- getByteString n
-  pure $ read . BC.unpack $ i
+getIntBytes :: Int -> Get Int
+getIntBytes n = read . BC.unpack <$> getByteString n
 
 --------------------------------------------------------------------------------
 
