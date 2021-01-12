@@ -67,16 +67,18 @@ getQuoteMsgs = do
 getQuoteMsg :: Get (Maybe QuoteMsg)
 getQuoteMsg = do
   (pktTime, len) <- getPacketHeader
-  if len < 47
-    then do _ <- skip len
-            pure $ Nothing
-    else do _ <- skip 42
+  _ <- skip 36
+  dstPort <- getInt16be
+  if dstPort == 15515 || dstPort == 15516
+    then do _ <- skip 4
             ids <- getByteString 5
             if ids /= B.pack [66, 54, 48, 51, 52]
               then do _ <- skip (len - 47)
                       pure Nothing
               else do (accTime, isin, bids, asks) <- getPacketData
                       pure $ Just $ QuoteMsg pktTime accTime isin bids asks
+    else do _ <- skip (len - 38)
+            pure $ Nothing
 
 getPacketHeader :: Get (UTCTime, Int)
 getPacketHeader = do
