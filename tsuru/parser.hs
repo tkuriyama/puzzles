@@ -48,10 +48,7 @@ parseArgs  args = case args of
 --------------------------------------------------------------------------------
 
 parseQuoteMsgs :: FilePath -> IO [QuoteMsg]
-parseQuoteMsgs fp = runGet getPcap <$> BL.readFile fp
-
-getPcap :: Get [QuoteMsg]
-getPcap = skip 24 *> getQuoteMsgs
+parseQuoteMsgs fp = runGet (skip 24 *> getQuoteMsgs) <$> BL.readFile fp
 
 getQuoteMsgs :: Get [QuoteMsg]
 getQuoteMsgs = do
