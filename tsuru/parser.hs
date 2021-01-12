@@ -4,7 +4,7 @@ import           Control.Monad
 import           Data.Binary.Get
 import qualified Data.ByteString as B
 import qualified Data.ByteString.Char8 as BC
-import qualified Data.ByteString.Lazy as BL
+import qualified Data.ByteString.Lazy.Internal as BL (defaultChunkSize)
 import qualified Data.Text as T
 import qualified Data.Text.IO as TIO
 import           Data.Time.Clock (UTCTime)
@@ -12,6 +12,7 @@ import           Data.Time.LocalTime
 import           Data.Time.Clock.POSIX (posixSecondsToUTCTime)
 import           Data.Time.Format
 import           System.Environment (getArgs)
+import           System.IO ( withBinaryFile, IOMode(ReadMode))
 
 --------------------------------------------------------------------------------
 
@@ -29,26 +30,35 @@ data Quote =
 type QuotePx = Int
 type QuoteQty = Int
 
+type DecodeResult =
+  Either (ByteOffset, String) [QuoteMsg]
+
 --------------------------------------------------------------------------------
 
 main :: IO ()
 main = do
   args <- getArgs
-  case parseArgs args of
-    Just (fp, runParse) -> runParse fp >>= printQuoteMsgs
-    Nothing -> putStrLn "Args expected: filename and optional reorder flag -r"
-
-parseArgs :: [String] -> Maybe (FilePath, FilePath -> IO [QuoteMsg])
-parseArgs  args = case args of
-  (fp:[]) -> Just (fp, parseQuoteMsgs)
-  (fp:"-r":[]) -> Just (fp, fmap reorder . parseQuoteMsgs)
-  ("-r":fp:[]) -> Just (fp, fmap reorder . parseQuoteMsgs)
-  _ -> Nothing
+  case args of
+    (fp:[]) -> decodeOrFail fp >>= printQuoteMsgs
+    (fp:"-r":[]) -> (fmap reorder . decodeOrFail) fp >>= printQuoteMsgs
+    ("-r":fp:[]) -> (fmap reorder . decodeOrFail) fp >>= printQuoteMsgs
+    _ -> putStrLn "Args expected: filename and optional reorder flag -r"
 
 --------------------------------------------------------------------------------
 
-parseQuoteMsgs :: FilePath -> IO [QuoteMsg]
-parseQuoteMsgs fp = runGet (skip 24 *> getQuoteMsgs) <$> BL.readFile fp
+-- Skip 24 bytes of global header, then run decoder incrementally
+decodeOrFail :: FilePath -> IO DecodeResult
+decodeOrFail f =
+  withBinaryFile f ReadMode $ \h -> do
+    feed (runGetIncremental (skip 24 *> getQuoteMsgs)) h
+  where
+    feed (Done _ _ x) _ = return (Right x)
+    feed (Fail _ pos str) _ = return (Left (pos, str))
+    feed (Partial k) h = do
+      chunk <- B.hGet h BL.defaultChunkSize
+      case B.length chunk of
+        0 -> feed (k Nothing) h
+        _ -> feed (k (Just chunk)) h
 
 getQuoteMsgs :: Get [QuoteMsg]
 getQuoteMsgs = do
@@ -61,6 +71,7 @@ getQuoteMsgs = do
               Just quote -> pure $ quote:quotes
               Nothing -> pure quotes
 
+-- filter by value on dstPort and first five bytes of data
 getQuoteMsg :: Get (Maybe QuoteMsg)
 getQuoteMsg = do
   (pktTime, len) <- getPacketHeader
@@ -112,13 +123,15 @@ getIntBytes n = read . BC.unpack <$> getByteString n
 
 --------------------------------------------------------------------------------
 
-reorder :: [QuoteMsg] -> [QuoteMsg]
-reorder = id
+reorder :: DecodeResult -> DecodeResult
+reorder = fmap id
 
 --------------------------------------------------------------------------------
 
-printQuoteMsgs :: [QuoteMsg] -> IO ()
-printQuoteMsgs = TIO.putStrLn . T.unlines . map showQuoteMsg
+printQuoteMsgs :: DecodeResult -> IO ()
+printQuoteMsgs result = case result of
+  Left (offset, err) -> putStrLn $ err ++ " (offset " ++ show offset ++ ")"
+  Right qs -> TIO.putStrLn . T.unlines . map showQuoteMsg $ qs
 
 showQuoteMsg :: QuoteMsg -> T.Text
 showQuoteMsg q =
@@ -126,8 +139,8 @@ showQuoteMsg q =
   where
     sp = " "
     pktTime = showUTCTime $ packetTime q
-    accTime = packs $ acceptTime q
-    isin = packs $ isinCode q
+    accTime = T.pack . show $ acceptTime q
+    isin = packs $ BC.unpack $ isinCode q
     bids = showQuotes $ reverse $ bidQuotes q
     asks = showQuotes $ askQuotes q
 
