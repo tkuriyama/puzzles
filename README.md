@@ -24,3 +24,5 @@ Systems programming exercises from https://www.inf.usi.ch/carzaniga/edu/sysprog1
 
 Longest palindromic substring in linear time.
 
+## tsuru
+Exercise in parsing Pcap file with Haskell.
