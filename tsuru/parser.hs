@@ -140,7 +140,7 @@ showQuoteMsg q =
     sp = " "
     pktTime = showUTCTime $ packetTime q
     accTime = T.pack . show $ acceptTime q
-    isin = packs $ BC.unpack $ isinCode q
+    isin = T.pack $ BC.unpack $ isinCode q
     bids = showQuotes $ reverse $ bidQuotes q
     asks = showQuotes $ askQuotes q
 
