@@ -5,6 +5,8 @@ import           Data.Binary.Get
 import qualified Data.ByteString as B
 import qualified Data.ByteString.Char8 as BC
 import qualified Data.ByteString.Lazy.Internal as BL (defaultChunkSize)
+import           Data.Function (on)
+import           Data.List (sortBy)
 import qualified Data.Text as T
 import qualified Data.Text.IO as TIO
 import           Data.Time.Clock (UTCTime)
@@ -20,7 +22,7 @@ data QuoteMsg = QuoteMsg
   { packetTime :: UTCTime
   , acceptTime :: TimeOfDay
   , isinCode :: B.ByteString
-  , bidQuotes ::  [Quote]
+  , bidQuotes :: [Quote]
   , askQuotes :: [Quote]
   }
 
@@ -123,8 +125,10 @@ getIntBytes n = read . BC.unpack <$> getByteString n
 
 --------------------------------------------------------------------------------
 
+-- naive sort, ignoring 3 second sliding window
 reorder :: DecodeResult -> DecodeResult
-reorder = fmap id
+reorder = fmap f
+  where f = sortBy (compare `on` acceptTime)
 
 --------------------------------------------------------------------------------
 
