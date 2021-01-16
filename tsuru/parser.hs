@@ -135,7 +135,7 @@ reorder = fmap f
 printQuoteMsgs :: DecodeResult -> IO ()
 printQuoteMsgs result = case result of
   Left (offset, err) -> putStrLn $ err ++ " (offset " ++ show offset ++ ")"
-  Right qs -> TIO.putStrLn . T.unlines . map showQuoteMsg $ qs
+  Right qs -> TIO.putStr . T.unlines . map showQuoteMsg $ qs
 
 showQuoteMsg :: QuoteMsg -> T.Text
 showQuoteMsg q =
