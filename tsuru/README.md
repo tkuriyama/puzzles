@@ -3,16 +3,16 @@
 
 Exercise in parsing Pcap file with Haskell.
 
-### parser
+### parser (v1)
 
 Naive implementation.
 
-- fully decode file using incremental pattern 
-- naive reordering, ignoring 3 second sliding window 
-- reordering and printing require two passes through messages, after decoding
+- fully decode file using incremental pattern
+- naive reordering over entire set of messages, ignoring 3 second sliding window
+- reordering and printing require two passes through messages (after decoding)
 
 ## parser_v2
 
-Some optimizations...
+- rewrite reordering with integrated processing (printing), using a (naive) list to maintain a buffer and flushing messages older than 3 seconds
 
-- reordering with integrated processing (printing), using a deque to maintain a buffer and flushing messages older than 3 seconds
+
