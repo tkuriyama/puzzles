@@ -5,6 +5,8 @@ import           Data.Binary.Get
 import qualified Data.ByteString as B
 import qualified Data.ByteString.Char8 as BC
 import qualified Data.ByteString.Lazy.Internal as BL (defaultChunkSize)
+import           Data.List (insertBy)
+import           Data.Function (on)
 import qualified Data.Text as T
 import qualified Data.Text.IO as TIO
 import           Data.Time.Clock (UTCTime)
@@ -12,7 +14,7 @@ import           Data.Time.LocalTime
 import           Data.Time.Clock.POSIX (posixSecondsToUTCTime)
 import           Data.Time.Format
 import           System.Environment (getArgs)
-import           System.IO ( withBinaryFile, IOMode(ReadMode))
+import           System.IO (withBinaryFile, IOMode(ReadMode))
 
 --------------------------------------------------------------------------------
 
@@ -126,7 +128,7 @@ getIntBytes n = read . BC.unpack <$> getByteString n
 printQuoteMsgs :: DecodeResult -> IO ()
 printQuoteMsgs result = case result of
   Left (offset, err) -> putStrLn $ err ++ " (offset " ++ show offset ++ ")"
-  Right qs -> TIO.putStrLn . T.unlines . map showQuoteMsg $ qs
+  Right qs -> TIO.putStr . T.unlines . map showQuoteMsg $ qs
 
 showQuoteMsg :: QuoteMsg -> T.Text
 showQuoteMsg q =
@@ -153,63 +155,33 @@ packs = T.pack . show
 
 --------------------------------------------------------------------------------
 
-data Deque a = Deque [a] [a]
-
-toList :: Deque a -> [a]
-toList (Deque l r) = l ++ reverse r
-
--- split Deque by performing takeWhile from the left
-splitWhile :: (a -> Bool) -> Deque a -> ([a], Deque a)
-splitWhile p (Deque l r) = case l of
-  [] -> let (xs, ys) = splitList p r
-        in (xs, Deque [] ys)
-  _ -> let (xs, ys) = splitList p l
-       in case ys of
-            [] -> let (xs', ys') = splitList p (reverse r)
-                  in (xs ++ xs', Deque [] ys')
-            _ -> (xs, Deque ys r)
-
-splitList :: (a -> Bool) -> [a] -> ([a], [a])
-splitList p xs = (takeWhile p xs, dropWhile p xs)
-
--- insert element into Deque from the right, stopping when predicate is false
-insertRight :: (a -> Bool) -> a -> Deque a -> Deque a
-insertRight p a (Deque l r) = case foldl fL (False, []) r of
-  (True, r') -> Deque l (reverse r')
-  (False, _) -> Deque (snd $ foldr fR (False, []) l) r
-  where
-    fL (done, acc) x = if p x then (True, x:p:acc) else (done, x:acc)
-    fR x (done, acc) = if (not p) x then (True, p:x:acc) else (done, x:acc)
-
-
---------------------------------------------------------------------------------
-
 printReorderQuoteMsgs :: DecodeResult -> IO ()
 printReorderQuoteMsgs result = case result of
   Left (offset, err) -> putStrLn $ err ++ " (offset " ++ show offset ++ ")"
   Right [] -> putStrLn "No messages parsed"
-  Right (q:qs) -> printReorder qs (Deque [] [q]) []
+  Right (q:qs) -> printReorder qs [q] []
 
-printReorder :: [QuoteMsg] -> Deque QuoteMsg -> [QuoteMsg] -> IO ()
+printReorder :: [QuoteMsg] -> [QuoteMsg] -> [QuoteMsg] -> IO ()
 printReorder qs buffer flush = do
   case flush of
     [] -> case qs of
-            [] -> pure ()
+            [] -> do TIO.putStr . T.unlines . map showQuoteMsg $ buffer
+                     pure ()
             _ -> do let (qs', buffer', flush') = processMsg qs buffer []
                     printReorder qs' buffer' flush'
     _ -> do TIO.putStr . T.unlines . map showQuoteMsg $ flush
             printReorder qs buffer []
 
-processMsg :: [QuoteMsg] -> Deque QuoteMsg -> [QuoteMsg] ->
-              ([QuoteMsg], Deque QuoteMsg, [QuoteMsg])
-processMsg qs buffer _ = case qs of
-  [] -> ([], buffer, toList buffer)
+processMsg :: [QuoteMsg] -> [QuoteMsg]-> [QuoteMsg] ->
+              ([QuoteMsg], [QuoteMsg], [QuoteMsg])
+processMsg quotes buffer _ = case quotes of
   (q:qs) -> (qs, buffer', flush)
     where
-      flushTime =
+      (flush, buffer') =
         let t = acceptTime q
             (h, m, s) = (todHour t, todMin t, todSec t)
-        in TimeOfDay h m (s - 3)
-      (flush, buffer') =
-        let (xs, deque) = splitWhile (\m -> acceptTime m <= flushTime) buffer
-        in (xs, insertRight (\m -> acceptTime m < acceptTime q) q deque)
+            flushTime = TimeOfDay h m (s - 3)
+            (xs, ys) = span (\x -> acceptTime x <= flushTime) buffer
+        in (xs, insertBy (compare `on` acceptTime) q ys)
+  [] -> ([], [], buffer)
+
