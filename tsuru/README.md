@@ -3,7 +3,7 @@
 
 Exercise in parsing Pcap file with Haskell.
 
-### parser (v1)
+## parser (v1)
 
 Naive implementation.
 
