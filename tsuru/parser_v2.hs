@@ -9,7 +9,7 @@ import           Data.List (insertBy)
 import           Data.Function (on)
 import qualified Data.Text as T
 import qualified Data.Text.IO as TIO
-import           Data.Time.Clock (UTCTime)
+import           Data.Time.Clock (UTCTime, NominalDiffTime)
 import           Data.Time.LocalTime
 import           Data.Time.Clock.POSIX (posixSecondsToUTCTime)
 import           Data.Time.Format
@@ -167,21 +167,21 @@ printReorder qs buffer flush = do
     [] -> case qs of
             [] -> do TIO.putStr . T.unlines . map showQuoteMsg $ buffer
                      pure ()
-            _ -> do let (qs', buffer', flush') = processMsg qs buffer []
+            _ -> do let (qs', buffer', flush') = processMsg qs buffer
                     printReorder qs' buffer' flush'
     _ -> do TIO.putStr . T.unlines . map showQuoteMsg $ flush
             printReorder qs buffer []
 
-processMsg :: [QuoteMsg] -> [QuoteMsg]-> [QuoteMsg] ->
-              ([QuoteMsg], [QuoteMsg], [QuoteMsg])
-processMsg quotes buffer _ = case quotes of
+window :: NominalDiffTime
+window = daysAndTimeOfDayToTime 0 $ TimeOfDay 0 0 3
+
+processMsg :: [QuoteMsg] -> [QuoteMsg]-> ([QuoteMsg], [QuoteMsg], [QuoteMsg])
+processMsg quotes buffer = case quotes of
   (q:qs) -> (qs, buffer', flush)
     where
       (flush, buffer') =
-        let t = acceptTime q
-            (h, m, s) = (todHour t, todMin t, todSec t)
-            flushTime = TimeOfDay h m (s - 3)
-            (xs, ys) = span (\x -> acceptTime x <= flushTime) buffer
+        let ft = daysAndTimeOfDayToTime 0
+            flushTime = ft (acceptTime q) - window
+            (xs, ys) = span (\x -> ft (acceptTime x) <= flushTime) buffer
         in (xs, insertBy (compare `on` acceptTime) q ys)
   [] -> ([], [], buffer)
-
