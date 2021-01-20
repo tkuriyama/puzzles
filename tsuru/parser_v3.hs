@@ -97,7 +97,6 @@ window = daysAndTimeOfDayToTime 0 $ TimeOfDay 0 0 3
 feedWithInitialChunk :: Decoder a -> Handle -> B.ByteString ->
                         IO (Either (ByteOffset, String) (a, B.ByteString))
 feedWithInitialChunk d h bs = case d of
-
   (Done bs' _ a) -> pure $ Right (a, bs `mappend` bs') -- verify
   (Fail _ pos str) -> pure $ Left (pos, str)
   (Partial k) -> case B.length bs of
