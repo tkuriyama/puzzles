@@ -3,6 +3,8 @@
 
 Exercise in parsing Pcap file with Haskell.
 
+[Pcap file structure](https://gist.github.com/tkuriyama/d90986828b74e8009c86ac57ad45e147).
+
 ## parser (v1)
 
 Naive implementation.
