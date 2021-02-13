@@ -2,6 +2,10 @@
 
 A collection of puzzles, exercises, and algorithms.
 
+## 538
+
+Puzzles from [Five-Thirty-Eight's Friday riddles](https://fivethirtyeight.com/tag/the-riddler/)
+
 ## fp-course
 
 Exercises from [fp-course](https://github.com/bitemyapp/fp-course).
