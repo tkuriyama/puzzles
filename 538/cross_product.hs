@@ -3,9 +3,9 @@
 
 import           Data.List
 
-type RowSize = Int
 type RowProduct = Int
 type ColProduct = Int
+type ColCount = Int
 
 type Cell = [Int]
 type Row a = [a]
@@ -16,14 +16,14 @@ digits = [0..9]
 
 --------------------------------------------------------------------------------
 
-solve :: [RowProduct] -> RowSize -> [ColProduct] -> [Matrix Int]
-solve rps rn cps =
-  filter f $ matrixCombs $ colCombs cps $ rowCombs rps rn
+solve :: [RowProduct] -> [ColProduct] -> [Matrix Int]
+solve rps cps =
+  filter f $ matrixCombs $ colCombs cps $ rowCombs rps (length cps)
   where
     f m = all (\(a, b) -> a == b) $ zip (map product m) rps
 
 -- possible list of numbers for each row
-rowCombs :: [RowProduct] -> RowSize -> Matrix Int
+rowCombs :: [RowProduct] -> ColCount -> Matrix Int
 rowCombs ps n = map (nub . sort . concat) $ map f ps
   where
     combs = sequence $ replicate n digits
