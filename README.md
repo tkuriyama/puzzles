@@ -6,6 +6,10 @@ A collection of puzzles, exercises, and algorithms.
 
 Puzzles from [Five-Thirty-Eight's Friday riddles](https://fivethirtyeight.com/tag/the-riddler/)
 
+## asyncio
+
+Examples and exercises from Caleb Hattingh's [Understanding Asyncio in Python](https://www.oreilly.com/library/view/using-asyncio-in/9781492075325/).
+
 ## fp-course
 
 Exercises from [fp-course](https://github.com/bitemyapp/fp-course).
