@@ -21,6 +21,7 @@ async def client(reader: StreamReader, writer: StreamWriter):
     send_task = asyncio.create_task(
     send_client(writer, SEND_QUEUES[writer]))
     print(f'Remote {peername} subscribed to {subscribe_chan}')
+
     try:
         while channel_name := await read_msg(reader):
             data = await read_msg(reader)
@@ -34,9 +35,9 @@ async def client(reader: StreamReader, writer: StreamWriter):
         print(f'Remote {peername} disconnected')
     finally:
         print(f'Remote {peername} closed')
-        await SEND_QUEUES[writer].put(None)   
-        await send_task   
-        del SEND_QUEUES[writer]   
+        await SEND_QUEUES[writer].put(None)
+        await send_task
+        del SEND_QUEUES[writer]
         SUBSCRIBERS[subscribe_chan].remove(writer)
 
 
@@ -66,10 +67,7 @@ async def chan_sender(name: bytes):
             if not writers:
                 await asyncio.sleep(1)
                 continue 
-            if name.startswith(b'/queue'):
-                writers.rotate()
-                writers = deque([writers[0]])
-            if not (msg := await CHAN_QUEUES[name].get()):  
+            if not (msg := await CHAN_QUEUES[name].get()):
                 break
             for writer in writers:
                 if not SEND_QUEUES[writer].full():
