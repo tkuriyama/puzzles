@@ -10,7 +10,7 @@ import Dict
 type ConcurrentProgram a b
     = Running (ActiveProgram a b)
     | Deadlock (List (Output a b))
-    | Completed (List (Output a b))
+    | Completed ( b, List (Output a b) )
     | Invalid (List (Output a b))
 
 
@@ -87,8 +87,8 @@ run program =
             List.map List.reverse outputs
                 |> Deadlock
 
-        Completed outputs ->
-            List.map List.reverse outputs
+        Completed ( sharedState, outputs ) ->
+            ( sharedState, List.map List.reverse outputs )
                 |> Completed
 
         Invalid outputs ->
@@ -105,7 +105,7 @@ advance p =
                     Deadlock <| List.map Tuple.second p.blockedThreads
 
                 True ->
-                    Completed p.outputs
+                    Completed ( p.sharedState, p.outputs )
 
         x :: xs ->
             execThread x { p | activeThreads = xs }
