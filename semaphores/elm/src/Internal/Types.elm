@@ -62,6 +62,7 @@ type OutputMsg a b
 
 type alias ExecutionSummary b =
     { totalCount : Int
+    , totalUniqueCount : Int
     , completed : ResultsSummary b
     , deadlocked : ResultsSummary b
     , invalid : ResultsSummary b
@@ -70,6 +71,7 @@ type alias ExecutionSummary b =
 
 type alias ResultsSummary b =
     { count : Int
+    , uniqueCount : Int
     , sharedStates : Maybe (List b)
     , outputStats : OutputStats
     }

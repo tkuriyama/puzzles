@@ -178,6 +178,7 @@ summarize programs =
             Utils.groupResults programs
     in
     { totalCount = List.length programs
+    , totalUniqueCount = LE.unique programs |> List.length
     , completed = summarizeCompleted completedPrograms
     , deadlocked = summarizeResults deadlockedPrograms
     , invalid = summarizeResults invalidPrograms
@@ -187,6 +188,7 @@ summarize programs =
 summarizeCompleted : List ( b, List (Output a b) ) -> ResultsSummary b
 summarizeCompleted pairs =
     { count = List.length pairs
+    , uniqueCount = LE.unique pairs |> List.length
     , sharedStates = List.map Tuple.first pairs |> LE.unique |> Just
     , outputStats = List.map Tuple.second pairs |> summarizeOutputs
     }
@@ -195,6 +197,7 @@ summarizeCompleted pairs =
 summarizeResults : List (List (Output a b)) -> ResultsSummary b
 summarizeResults outputs =
     { count = List.length outputs
+    , uniqueCount = LE.unique outputs |> List.length
     , sharedStates = Nothing
     , outputStats = summarizeOutputs outputs
     }
