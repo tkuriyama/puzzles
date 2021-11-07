@@ -6,6 +6,7 @@ module Semaphore.Exhaustive exposing (..)
 import Dict
 import Internal.Types exposing (..)
 import Internal.Utils as Utils
+import List.Extra as LE
 import Semaphore
 
 
@@ -25,6 +26,7 @@ init =
 
 
 --------------------------------------------------------------------------------
+-- Exhaustive Executin
 
 
 run : ConcurrentProgram a b -> List (ConcurrentProgram a b)
@@ -162,3 +164,53 @@ execSignalHelper threadPair semaphoreDict p =
         xs ->
             Utils.listPairs xs
                 |> List.map (\( y, ys ) -> f y ys)
+
+
+
+--------------------------------------------------------------------------------
+-- Analysis
+
+
+summarize : List (ConcurrentProgram a b) -> ExecutionSummary b
+summarize programs =
+    let
+        ( completedPrograms, deadlockedPrograms, invalidPrograms ) =
+            Utils.groupResults programs
+    in
+    { totalCount = List.length programs
+    , completed = summarizeCompleted completedPrograms
+    , deadlocked = summarizeResults deadlockedPrograms
+    , invalid = summarizeResults invalidPrograms
+    }
+
+
+summarizeCompleted : List ( b, List (Output a b) ) -> ResultsSummary b
+summarizeCompleted pairs =
+    { count = List.length pairs
+    , sharedStates = List.map Tuple.first pairs |> LE.unique |> Just
+    , outputStats = List.map Tuple.second pairs |> summarizeOutputs
+    }
+
+
+summarizeResults : List (List (Output a b)) -> ResultsSummary b
+summarizeResults outputs =
+    { count = List.length outputs
+    , sharedStates = Nothing
+    , outputStats = summarizeOutputs outputs
+    }
+
+
+summarizeOutputs : List (List (Output a b)) -> OutputStats
+summarizeOutputs outputs =
+    { avgThreadLength =
+        List.map Utils.avgLength outputs
+            |> Utils.intAvg
+    , minThreadLength =
+        List.map Utils.minLength outputs
+            |> List.minimum
+            |> Maybe.withDefault 0
+    , maxThreadLength =
+        List.map Utils.maxLength outputs
+            |> List.maximum
+            |> Maybe.withDefault 0
+    }

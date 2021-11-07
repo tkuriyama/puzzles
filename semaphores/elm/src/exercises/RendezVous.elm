@@ -1,4 +1,4 @@
-module RendezVous exposing (..)
+module Exercises.RendezVous exposing (..)
 
 {-| Modelling the rendez-vous exercise.
 -}

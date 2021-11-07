@@ -1,8 +1,8 @@
 module TestMutex exposing (..)
 
+import Exercises.Mutex as Mutex
 import Expect
 import Internal.Utils as Utils
-import Mutex
 import Semaphore
 import Test exposing (..)
 

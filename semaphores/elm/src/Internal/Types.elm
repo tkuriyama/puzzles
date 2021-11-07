@@ -5,6 +5,7 @@ import Dict
 
 
 --------------------------------------------------------------------------------
+-- Programs and Semaphores
 
 
 type ConcurrentProgram a b
@@ -52,3 +53,30 @@ type OutputMsg a b
     | Waiting String Semaphore
     | InvalidSemaphore String
     | Unblocked
+
+
+
+--------------------------------------------------------------------------------
+-- Program Output
+
+
+type alias ExecutionSummary b =
+    { totalCount : Int
+    , completed : ResultsSummary b
+    , deadlocked : ResultsSummary b
+    , invalid : ResultsSummary b
+    }
+
+
+type alias ResultsSummary b =
+    { count : Int
+    , sharedStates : Maybe (List b)
+    , outputStats : OutputStats
+    }
+
+
+type alias OutputStats =
+    { avgThreadLength : Int
+    , minThreadLength : Int
+    , maxThreadLength : Int
+    }

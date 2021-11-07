@@ -1,4 +1,4 @@
-module Mutex exposing (..)
+module Exercises.Mutex exposing (..)
 
 {- Modeling the mutex exercises. -}
 

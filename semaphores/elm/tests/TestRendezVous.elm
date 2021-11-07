@@ -1,8 +1,8 @@
 module TestRendezVous exposing (..)
 
+import Exercises.RendezVous as RendezVous
 import Expect
 import Internal.Utils as Utils
-import RendezVous
 import Semaphore
 import Test exposing (..)
 
