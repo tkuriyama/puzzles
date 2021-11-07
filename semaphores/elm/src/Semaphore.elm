@@ -1,61 +1,22 @@
 module Semaphore exposing (..)
 
+{-| Model the execution of simple concurrenc threads with semaphores.
+
+The order of execution is based on the hard-coded logic (no randomization).
+So, while no correct program should result, in say, a deadlock, the fact
+that a program completes as expected doesn't guarantee it's correct.
+
+See Semaphores.Exhaustive for modeling all execution paths.
+
+-}
+
 import Dict
+import Internal.Types exposing (..)
 
 
 
 --------------------------------------------------------------------------------
-
-
-type ConcurrentProgram a b
-    = Running (ActiveProgram a b)
-    | Deadlock (List (Output a b))
-    | Completed ( b, List (Output a b) )
-    | Invalid (List (Output a b))
-
-
-type alias ActiveProgram a b =
-    { sharedState : b
-    , activeThreads : List (ThreadPair a b)
-    , blockedThreads : List (ThreadPair a b)
-    , outputs : List (Output a b)
-    , semaphores : Dict.Dict String Semaphore
-    }
-
-
-type alias Semaphore =
-    Int
-
-
-type alias ThreadPair a b =
-    ( Thread a b, Output a b )
-
-
-type alias Thread a b =
-    ( List (Statement a b), a )
-
-
-type Statement a b
-    = Expression (( a, b ) -> ( a, b ))
-    | Signal String
-    | Wait String
-
-
-type alias Output a b =
-    List (OutputMsg a b)
-
-
-type OutputMsg a b
-    = Evaluated ( a, b )
-    | Signaled String Semaphore
-    | NoWait String Semaphore
-    | Waiting String Semaphore
-    | InvalidSemaphore String
-    | Unblocked
-
-
-
---------------------------------------------------------------------------------
+-- Constructor
 
 
 init :
@@ -75,6 +36,7 @@ init sharedState threads semaphorePairs =
 
 
 --------------------------------------------------------------------------------
+-- Execute
 
 
 run : ConcurrentProgram a b -> ConcurrentProgram a b
@@ -194,27 +156,36 @@ execSignal semName stmt stmts threadState output p =
                     , Signaled semName n :: output
                     )
             in
-            case p.blockedThreads of
-                [] ->
-                    Running
-                        { p
-                            | activeThreads = p.activeThreads ++ [ threadPair ]
-                            , semaphores = semaphoreDict
-                        }
+            execSignalHelper threadPair semaphoreDict p
 
-                x :: xs ->
-                    let
-                        unblocked =
-                            Tuple.mapSecond ((::) Unblocked) x
-                    in
-                    Running
-                        { p
-                            | activeThreads =
-                                p.activeThreads
-                                    ++ [ unblocked, threadPair ]
-                            , blockedThreads = xs
-                            , semaphores = semaphoreDict
-                        }
+
+execSignalHelper :
+    ThreadPair a b
+    -> Dict.Dict String Semaphore
+    -> ActiveProgram a b
+    -> ConcurrentProgram a b
+execSignalHelper threadPair semaphoreDict p =
+    case p.blockedThreads of
+        [] ->
+            Running
+                { p
+                    | activeThreads = p.activeThreads ++ [ threadPair ]
+                    , semaphores = semaphoreDict
+                }
+
+        x :: xs ->
+            let
+                unblocked =
+                    Tuple.mapSecond ((::) Unblocked) x
+            in
+            Running
+                { p
+                    | activeThreads =
+                        p.activeThreads
+                            ++ [ unblocked, threadPair ]
+                    , blockedThreads = xs
+                    , semaphores = semaphoreDict
+                }
 
 
 execWait :
@@ -240,29 +211,41 @@ execWait semName stmt stmts threadState output p =
                 |> Invalid
 
         Just n ->
-            case n < 0 of
-                True ->
-                    let
-                        threadPair =
-                            ( thread
-                            , Waiting semName 0 :: output
-                            )
-                    in
-                    Running
-                        { p | blockedThreads = p.blockedThreads ++ [ threadPair ] }
+            execWaitHelper thread output n semName semaphoreDict p
 
-                False ->
-                    let
-                        threadPair =
-                            ( thread
-                            , NoWait semName n :: output
-                            )
-                    in
-                    Running
-                        { p
-                            | activeThreads = p.activeThreads ++ [ threadPair ]
-                            , semaphores = semaphoreDict
-                        }
+
+execWaitHelper :
+    Thread a b
+    -> Output a b
+    -> Int
+    -> String
+    -> Dict.Dict String Semaphore
+    -> ActiveProgram a b
+    -> ConcurrentProgram a b
+execWaitHelper newThread output n semName semaphoreDict p =
+    case n < 0 of
+        True ->
+            let
+                threadPair =
+                    ( newThread
+                    , Waiting semName 0 :: output
+                    )
+            in
+            Running
+                { p | blockedThreads = p.blockedThreads ++ [ threadPair ] }
+
+        False ->
+            let
+                threadPair =
+                    ( newThread
+                    , NoWait semName n :: output
+                    )
+            in
+            Running
+                { p
+                    | activeThreads = p.activeThreads ++ [ threadPair ]
+                    , semaphores = semaphoreDict
+                }
 
 
 

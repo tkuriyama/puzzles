@@ -1,7 +1,9 @@
 module RendezVous exposing (..)
 
-{- } -}
+{-| Modelling the rendez-vous exercise.
+-}
 
+import Internal.Types exposing (..)
 import Semaphore exposing (..)
 
 
@@ -14,7 +16,6 @@ programNormal1 =
         ()
         [ ( thread1a, "" ), ( thread2a, "" ) ]
         [ ( "a1Done", 0 ), ( "b1Done", 0 ) ]
-        |> run
 
 
 programNormal2 =
@@ -22,7 +23,6 @@ programNormal2 =
         ()
         [ ( thread1a, "" ), ( thread2b, "" ) ]
         [ ( "a1Done", 0 ), ( "b1Done", 0 ) ]
-        |> run
 
 
 programDeadlock =
@@ -30,7 +30,6 @@ programDeadlock =
         ()
         [ ( thread1b, "" ), ( thread2b, "" ) ]
         [ ( "a1Done", 0 ), ( "b1Done", 0 ) ]
-        |> run
 
 
 
