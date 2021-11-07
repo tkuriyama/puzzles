@@ -147,7 +147,7 @@ execSignalHelper threadPair semaphoreDict p =
             Running
                 { p
                     | activeThreads =
-                        p.activeThreads ++ [ unblocked, threadPair ]
+                        p.activeThreads ++ [ unblocked_, threadPair ]
                     , blockedThreads = blocked
                     , semaphores = semaphoreDict
                 }
