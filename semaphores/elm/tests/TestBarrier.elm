@@ -11,8 +11,8 @@ import Test exposing (..)
 --------------------------------------------------------------------------------
 
 
-testMutex : Test
-testMutex =
+testBarrier : Test
+testBarrier =
     describe
         "Test barrier programs run as expected"
         [ test
