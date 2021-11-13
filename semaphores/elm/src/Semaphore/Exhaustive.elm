@@ -95,11 +95,16 @@ execInstruction stmt stmts threadState output p =
         Expression f ->
             [ Semaphore.execExpression f stmt stmts threadState output p ]
 
-        Signal semName ->
-            execSignal semName stmt stmts threadState output p
+        SemaphoreStatement f ->
+            case f ( threadState, p.sharedState ) of
+                Signal semName ->
+                    execSignal semName stmt stmts threadState output p
 
-        Wait semName ->
-            [ Semaphore.execWait semName stmt stmts threadState output p ]
+                Wait semName ->
+                    [ Semaphore.execWait semName stmt stmts threadState output p ]
+
+                Pass ->
+                    [ Semaphore.execPass stmts threadState output p ]
 
 
 execSignal :

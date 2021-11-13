@@ -29,7 +29,7 @@ sumTo10 =
 
 
 thread =
-    [ Wait "mutex"
+    [ SemaphoreStatement (\( _, _ ) -> Wait "mutex")
     , Expression (\( _, count ) -> ( "", count + 1 ))
-    , Signal "mutex"
+    , SemaphoreStatement (\( _, _ ) -> Signal "mutex")
     ]

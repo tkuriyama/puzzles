@@ -98,11 +98,16 @@ execInstruction stmt stmts threadState output p =
         Expression f ->
             execExpression f stmt stmts threadState output p
 
-        Signal semName ->
-            execSignal semName stmt stmts threadState output p
+        SemaphoreStatement f ->
+            case f ( threadState, p.sharedState ) of
+                Signal semName ->
+                    execSignal semName stmt stmts threadState output p
 
-        Wait semName ->
-            execWait semName stmt stmts threadState output p
+                Wait semName ->
+                    execWait semName stmt stmts threadState output p
+
+                Pass ->
+                    execPass stmts threadState output p
 
 
 execExpression :
@@ -246,6 +251,25 @@ execWaitHelper newThread output n semName semaphoreDict p =
                     | activeThreads = p.activeThreads ++ [ threadPair ]
                     , semaphores = semaphoreDict
                 }
+
+
+execPass :
+    List (Statement a b)
+    -> a
+    -> Output a b
+    -> ActiveProgram a b
+    -> ConcurrentProgram a b
+execPass stmts threadState output p =
+    let
+        threadPair =
+            ( ( stmts, threadState )
+            , NoAction :: output
+            )
+    in
+    Running
+        { p
+            | activeThreads = p.activeThreads ++ [ threadPair ]
+        }
 
 
 

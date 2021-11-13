@@ -38,31 +38,31 @@ programDeadlock =
 
 thread1a =
     [ Expression (\( _, () ) -> ( "a1", () ))
-    , Signal "a1Done"
-    , Wait "b1Done"
+    , SemaphoreStatement (\( _, _ ) -> Signal "a1Done")
+    , SemaphoreStatement (\( _, _ ) -> Wait "b1Done")
     , Expression (\( _, () ) -> ( "a2", () ))
     ]
 
 
 thread2a =
     [ Expression (\( _, () ) -> ( "b1", () ))
-    , Signal "b1Done"
-    , Wait "a1Done"
+    , SemaphoreStatement (\( _, _ ) -> Signal "b1Done")
+    , SemaphoreStatement (\( _, _ ) -> Wait "a1Done")
     , Expression (\( _, () ) -> ( "b2", () ))
     ]
 
 
 thread1b =
     [ Expression (\( _, () ) -> ( "a1", () ))
-    , Wait "b1Done"
-    , Signal "a1Done"
+    , SemaphoreStatement (\( _, _ ) -> Wait "b1Done")
+    , SemaphoreStatement (\( _, _ ) -> Signal "a1Done")
     , Expression (\( _, () ) -> ( "a2", () ))
     ]
 
 
 thread2b =
     [ Expression (\( _, () ) -> ( "b1", () ))
-    , Wait "a1Done"
-    , Signal "b1Done"
+    , SemaphoreStatement (\( _, _ ) -> Wait "a1Done")
+    , SemaphoreStatement (\( _, _ ) -> Signal "b1Done")
     , Expression (\( _, () ) -> ( "b2", () ))
     ]

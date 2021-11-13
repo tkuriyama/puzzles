@@ -38,8 +38,13 @@ type alias Thread a b =
 
 type Statement a b
     = Expression (( a, b ) -> ( a, b ))
-    | Signal String
+    | SemaphoreStatement (( a, b ) -> SemaphoreAction)
+
+
+type SemaphoreAction
+    = Signal String
     | Wait String
+    | Pass
 
 
 type alias Output a b =
@@ -51,8 +56,9 @@ type OutputMsg a b
     | Signaled String Semaphore
     | NoWait String Semaphore
     | Waiting String Semaphore
-    | InvalidSemaphore String
     | Unblocked
+    | NoAction
+    | InvalidSemaphore String
 
 
 
