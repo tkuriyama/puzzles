@@ -1,5 +1,6 @@
 module Internal.Utils exposing (..)
 
+import Dict
 import Internal.Types exposing (..)
 
 
@@ -11,9 +12,9 @@ import Internal.Types exposing (..)
 groupResults :
     List (ConcurrentProgram a b)
     ->
-        ( List ( b, List (Output a b) )
-        , List (List (Output a b))
-        , List (List (Output a b))
+        ( List ( b, SemaphoreDict, List (Output a b) )
+        , List ( SemaphoreDict, List (Output a b) )
+        , List ( SemaphoreDict, List (Output a b) )
         )
 groupResults =
     let
@@ -54,7 +55,9 @@ completed program =
             False
 
 
-completedValue : ConcurrentProgram a b -> Maybe ( b, List (Output a b) )
+completedValue :
+    ConcurrentProgram a b
+    -> Maybe ( b, SemaphoreDict, List (Output a b) )
 completedValue program =
     case program of
         Completed value ->
@@ -66,7 +69,7 @@ completedValue program =
 
 completedState : ConcurrentProgram a b -> Maybe b
 completedState =
-    completedValue >> Maybe.map Tuple.first
+    completedValue >> Maybe.map first
 
 
 
@@ -168,3 +171,23 @@ intAvg xs =
 
         ys ->
             List.sum ys // List.length ys
+
+
+
+--------------------------------------------------------------------------------
+-- Tuple
+
+
+first : ( a, b, c ) -> a
+first ( a, _, _ ) =
+    a
+
+
+second : ( a, b, c ) -> b
+second ( _, b, _ ) =
+    b
+
+
+third : ( a, b, c ) -> c
+third ( _, _, c ) =
+    c

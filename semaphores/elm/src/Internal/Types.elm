@@ -10,9 +10,9 @@ import Dict
 
 type ConcurrentProgram a b
     = Running (ActiveProgram a b)
-    | Deadlock (List (Output a b))
-    | Completed ( b, List (Output a b) )
-    | Invalid (List (Output a b))
+    | Deadlock ( SemaphoreDict, List (Output a b) )
+    | Completed ( b, SemaphoreDict, List (Output a b) )
+    | Invalid ( SemaphoreDict, List (Output a b) )
 
 
 type alias ActiveProgram a b =
@@ -20,7 +20,7 @@ type alias ActiveProgram a b =
     , activeThreads : List (ThreadPair a b)
     , blockedThreads : List (ThreadPair a b)
     , outputs : List (Output a b)
-    , semaphores : Dict.Dict String Semaphore
+    , semaphores : SemaphoreDict
     }
 
 
@@ -45,6 +45,10 @@ type SemaphoreAction
     = Signal String
     | Wait String
     | Pass
+
+
+type alias SemaphoreDict =
+    Dict.Dict String Semaphore
 
 
 type alias Output a b =
@@ -79,6 +83,7 @@ type alias ResultsSummary b =
     { count : Int
     , uniqueCount : Int
     , sharedStates : Maybe (List b)
+    , semaphoreDicts : List SemaphoreDict
     , outputStats : OutputStats
     }
 

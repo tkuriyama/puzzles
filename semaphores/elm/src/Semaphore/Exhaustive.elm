@@ -35,18 +35,18 @@ run program =
         Running p ->
             advance p |> List.concatMap run
 
-        Deadlock outputs ->
-            [ List.map List.reverse outputs
+        Deadlock ( semaphores, outputs ) ->
+            [ ( semaphores, List.map List.reverse outputs )
                 |> Deadlock
             ]
 
-        Completed ( sharedState, outputs ) ->
-            [ ( sharedState, List.map List.reverse outputs )
+        Completed ( sharedState, semaphores, outputs ) ->
+            [ ( sharedState, semaphores, List.map List.reverse outputs )
                 |> Completed
             ]
 
-        Invalid outputs ->
-            [ List.map List.reverse outputs
+        Invalid ( semaphores, outputs ) ->
+            [ ( semaphores, List.map List.reverse outputs )
                 |> Invalid
             ]
 
@@ -57,10 +57,14 @@ advance p =
         [] ->
             case List.isEmpty p.blockedThreads of
                 False ->
-                    [ Deadlock <| List.map Tuple.second p.blockedThreads ]
+                    [ Deadlock
+                        ( p.semaphores, List.map Tuple.second p.blockedThreads )
+                    ]
 
                 True ->
-                    [ Completed ( p.sharedState, p.outputs ) ]
+                    [ Completed
+                        ( p.sharedState, p.semaphores, p.outputs )
+                    ]
 
         xs ->
             Utils.listPairs xs
@@ -122,8 +126,9 @@ execSignal semName stmt stmts threadState output p =
     in
     case value of
         Nothing ->
-            [ (InvalidSemaphore semName :: output)
-                :: p.outputs
+            [ ( p.semaphores
+              , (InvalidSemaphore semName :: output) :: p.outputs
+              )
                 |> Invalid
             ]
 
@@ -139,7 +144,7 @@ execSignal semName stmt stmts threadState output p =
 
 execSignalHelper :
     ThreadPair a b
-    -> Dict.Dict String Semaphore
+    -> SemaphoreDict
     -> ActiveProgram a b
     -> List (ConcurrentProgram a b)
 execSignalHelper threadPair semaphoreDict p =
@@ -190,21 +195,37 @@ summarize programs =
     }
 
 
-summarizeCompleted : List ( b, List (Output a b) ) -> ResultsSummary b
-summarizeCompleted pairs =
-    { count = List.length pairs
-    , uniqueCount = LE.unique pairs |> List.length
-    , sharedStates = List.map Tuple.first pairs |> LE.unique |> Just
-    , outputStats = List.map Tuple.second pairs |> summarizeOutputs
+summarizeCompleted :
+    List ( b, SemaphoreDict, List (Output a b) )
+    -> ResultsSummary b
+summarizeCompleted triples =
+    { count =
+        List.length triples
+    , uniqueCount =
+        LE.unique triples |> List.length
+    , sharedStates =
+        List.map Utils.first triples |> LE.unique |> Just
+    , semaphoreDicts =
+        List.map Utils.second triples |> LE.unique
+    , outputStats =
+        List.map Utils.third triples |> summarizeOutputs
     }
 
 
-summarizeResults : List (List (Output a b)) -> ResultsSummary b
-summarizeResults outputs =
-    { count = List.length outputs
-    , uniqueCount = LE.unique outputs |> List.length
-    , sharedStates = Nothing
-    , outputStats = summarizeOutputs outputs
+summarizeResults :
+    List ( SemaphoreDict, List (Output a b) )
+    -> ResultsSummary b
+summarizeResults pairs =
+    { count =
+        List.length pairs
+    , uniqueCount =
+        LE.unique pairs |> List.length
+    , semaphoreDicts =
+        List.map Tuple.first pairs |> LE.unique
+    , sharedStates =
+        Nothing
+    , outputStats =
+        List.map Tuple.second pairs |> summarizeOutputs
     }
 
 
