@@ -237,11 +237,14 @@ execWaitHelper newThread output n semName semaphoreDict p =
             let
                 threadPair =
                     ( newThread
-                    , Waiting semName 0 :: output
+                    , Waiting semName n :: output
                     )
             in
             Running
-                { p | blockedThreads = p.blockedThreads ++ [ threadPair ] }
+                { p
+                    | blockedThreads = p.blockedThreads ++ [ threadPair ]
+                    , semaphores = semaphoreDict
+                }
 
         False ->
             let
