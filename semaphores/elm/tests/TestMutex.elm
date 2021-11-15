@@ -1,5 +1,6 @@
 module TestMutex exposing (..)
 
+import Dict
 import Exercises.Mutex as Mutex
 import Expect
 import Internal.Utils as Utils
@@ -30,5 +31,15 @@ testMutex =
                     |> Semaphore.run
                     |> Utils.completedState
                     |> Expect.equal (Just 10)
+            )
+        , test
+            "Mutex value is 1 after finishing program"
+            (\_ ->
+                Mutex.sumTo10
+                    |> Semaphore.run
+                    |> Utils.completedValue
+                    |> Maybe.map Utils.second
+                    |> Expect.equal
+                        (Just <| Dict.fromList [ ( "mutex", 1 ) ])
             )
         ]
