@@ -13,16 +13,21 @@ Barrier code
 mutex = Semaphore(1)
 barrier = Semaphore(0)
 count = 0
-
+x
 **Thread**
-
+```
 mutex.wait()
 count = count + 1
 mutex.signal()
-if count == n: barrier.signal()
+
+if count == n:
+    barrier.signal()
+
 barrier.wait()
 barrier.signal()
-critical point
+
+# critical point
+```
 
 
 ## Implementation
