@@ -281,6 +281,7 @@ execPass stmts threadState output p =
 
 
 --------------------------------------------------------------------------------
+-- Helpers
 
 
 tryUpdate :
@@ -297,3 +298,16 @@ tryUpdate f key dict =
             ( Dict.update key (Maybe.map f) dict
             , Just <| f val
             )
+
+
+mapActive :
+    (ActiveProgram a b -> ConcurrentProgram a b)
+    -> ConcurrentProgram a b
+    -> ConcurrentProgram a b
+mapActive f program =
+    case program of
+        Running p ->
+            f p
+
+        _ ->
+            program
