@@ -32,5 +32,13 @@ Systems programming exercises from https://www.inf.usi.ch/carzaniga/edu/sysprog1
 
 Longest palindromic substring in linear time.
 
+## plfa
+
+Exercises from [Programming Language Foundations in Agda](https://plfa.github.io/).
+
+## semaphores
+
+Exercises from [The Little Book of Semaphores](https://greenteapress.com/wp/semaphores/).
+
 ## tsuru
 Exercise in parsing Pcap file with Haskell.
